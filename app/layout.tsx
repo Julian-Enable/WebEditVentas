@@ -6,8 +6,8 @@ import { prisma } from '@/lib/prisma';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'TiendaPro - Tu tienda online de confianza',
-  description: 'Los mejores productos al mejor precio',
+  title: 'CasaPlay - Los mejores productos gaming y tecnología',
+  description: 'Los mejores productos gaming y tecnología al mejor precio',
 };
 
 async function getSettings() {
