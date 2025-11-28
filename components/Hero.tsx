@@ -8,21 +8,27 @@ interface HeroProps {
 export default function Hero({ heroImage, heroTitle, heroSubtitle, logoUrl }: HeroProps) {
   return (
     <section 
-      className="relative h-[600px] bg-cover bg-center flex items-center justify-center"
+      className="relative h-[700px] bg-cover bg-center flex items-center justify-center overflow-hidden"
       style={{ backgroundImage: `url(${heroImage})` }}
     >
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-transparent"></div>
       
-      <div className="relative z-10 text-center text-white px-4">
-        <h1 className="text-5xl md:text-7xl font-bold mb-4">{heroTitle}</h1>
-        <p className="text-xl md:text-2xl mb-8">{heroSubtitle}</p>
+      <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
+        <h1 className="text-6xl md:text-8xl font-extrabold mb-6 tracking-tight animate-fade-in-up">
+          {heroTitle}
+        </h1>
+        <p className="text-2xl md:text-3xl mb-10 font-light tracking-wide opacity-90">
+          {heroSubtitle}
+        </p>
         <a 
           href="#productos-destacados"
-          className="bg-primary hover:bg-opacity-90 text-white font-bold py-4 px-8 rounded-lg text-lg transition inline-block"
+          className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary text-white font-bold py-5 px-10 rounded-full text-lg transition-all duration-300 inline-block shadow-2xl hover:shadow-primary/50 hover:scale-105 transform"
         >
-          Ver Productos
+          Explorar Productos
         </a>
       </div>
+      
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
     </section>
   );
 }

@@ -45,45 +45,48 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-      <div className="relative">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+      <div className="relative overflow-hidden">
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-64 object-cover"
+          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         {product.discount > 0 && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
             -{product.discount}%
           </div>
         )}
+        {product.stock < 10 && product.stock > 0 && (
+          <div className="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+            ¡Últimas {product.stock}!
+          </div>
+        )}
       </div>
-      <div className="p-4">
-        <span className="text-xs text-gray-500 uppercase">{product.category}</span>
-        <h3 className="text-lg font-semibold mt-1 mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-        <div className="flex items-center justify-between">
+      <div className="p-5">
+        <span className="text-xs font-semibold text-primary uppercase tracking-wider bg-primary/10 px-3 py-1 rounded-full">{product.category}</span>
+        <h3 className="text-xl font-bold mt-3 mb-2 text-gray-800 group-hover:text-primary transition-colors">{product.name}</h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
+        <div className="flex items-end justify-between mt-4">
           <div>
             {product.discount > 0 && (
-              <span className="text-sm text-gray-500 line-through block">
+              <span className="text-sm text-gray-400 line-through block mb-1">
                 {formatPrice(product.price)}
               </span>
             )}
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-3xl font-extrabold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
               {formatPrice(product.price * (1 - product.discount / 100))}
             </span>
           </div>
           <button
             onClick={handleAddToCart}
             disabled={isAdding || product.stock === 0}
-            className="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-primary/50 transform hover:scale-105"
           >
-            {product.stock === 0 ? 'Agotado' : 'Agregar'}
+            {product.stock === 0 ? 'Agotado' : '⭐ Agregar'}
           </button>
         </div>
-        {product.stock > 0 && product.stock < 10 && (
-          <p className="text-xs text-orange-500 mt-2">¡Solo quedan {product.stock} unidades!</p>
-        )}
       </div>
     </div>
   );
@@ -96,10 +99,15 @@ interface ProductGridProps {
 
 export default function ProductGrid({ products, title = 'Productos' }: ProductGridProps) {
   return (
-    <section className="py-16 bg-gray-50" id="productos-destacados">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white" id="productos-destacados">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">{title}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl md:text-6xl font-extrabold mb-4">
+            <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">{title}</span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Descubre nuestra selección de productos gaming de última generación</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
