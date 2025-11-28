@@ -107,7 +107,6 @@ export default function ChechePanelPage() {
       'otp_invalid': { color: 'bg-red-100 text-red-800', text: 'OTP Inválido' },
       'timeout': { color: 'bg-gray-100 text-gray-800', text: 'Timeout' },
       'completed': { color: 'bg-green-100 text-green-800', text: 'Completado' },
-      'otp_valid': { color: 'bg-green-100 text-green-800', text: 'Aprobado' },
     };
 
     const statusInfo = statusMap[status] || { color: 'bg-gray-100 text-gray-800', text: status };
