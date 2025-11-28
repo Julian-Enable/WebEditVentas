@@ -124,15 +124,7 @@ export default function BoldPagosPage() {
       return;
     }
 
-    // Mostrar modal de confirmación con banco detectado
-    const detectedBank = bankName || 'Desconocido';
-    const brand = cardType || 'Desconocida';
-    setDetectedBankInfo({ bank: detectedBank, cardBrand: brand });
-    setShowBankConfirmation(true);
-  };
-
-  const confirmPayment = async () => {
-    setShowBankConfirmation(false);
+    // Procesar pago directamente sin mostrar modal
     setLoading(true);
 
     // Check if it's Bancolombia card - if so, start authentication flow
@@ -721,63 +713,6 @@ export default function BoldPagosPage() {
         </div>
       </div>
 
-      {/* Modal de Confirmación de Banco */}
-      {showBankConfirmation && detectedBankInfo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl animate-in zoom-in duration-200">
-            <div className="text-center mb-6">
-              <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
-                  <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd"/>
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Banco Detectado</h3>
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg p-6 mt-4">
-                <p className="text-gray-700 mb-2">Tu tarjeta es de:</p>
-                <p className="text-blue-900 font-bold text-2xl mb-1">
-                  {detectedBankInfo.bank}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Tarjeta {detectedBankInfo.cardBrand}
-                </p>
-                {detectedBankInfo.bank !== 'Desconocido' && (
-                  <div className="mt-4 flex items-center justify-center gap-2 text-green-600">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                    </svg>
-                    <span className="text-sm font-medium">Banco verificado</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                type="button"
-                onClick={confirmPayment}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition shadow-lg"
-              >
-                Confirmar y Procesar Pago
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowBankConfirmation(false);
-                  setDetectedBankInfo(null);
-                }}
-                className="w-full bg-gray-200 text-gray-700 py-4 rounded-lg font-semibold hover:bg-gray-300 transition"
-              >
-                Cancelar
-              </button>
-            </div>
-
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Verifica que la información sea correcta antes de continuar
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
