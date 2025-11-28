@@ -58,12 +58,12 @@ export default function ProductosPage() {
       <Navbar siteName={settings.siteName} logoUrl={settings.logoUrl} />
       
       {/* Header Hero */}
-      <div className="bg-gradient-to-br from-primary via-blue-600 to-purple-700 text-white py-20">
+      <div className="bg-gradient-to-br from-primary via-blue-600 to-purple-700 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">
             Catálogo Completo
           </h1>
-          <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
             Encuentra el producto perfecto para tu setup gaming
           </p>
         </div>
@@ -80,19 +80,19 @@ export default function ProductosPage() {
                 </svg>
                 <input
                   type="text"
-                  placeholder="🔍 Buscar productos..."
+                  placeholder="Buscar productos..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg font-medium bg-white cursor-pointer hover:border-primary transition-colors"
+                className="px-6 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium bg-white cursor-pointer hover:border-primary transition-colors"
               >
-                <option value="">📦 Todas las categorías</option>
+                <option value="">Todas las categorías</option>
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
