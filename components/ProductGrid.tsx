@@ -25,10 +25,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = async () => {
     setIsAdding(true);
+    const finalPrice = product.price * (1 - product.discount / 100);
     addItem({
       productId: product.id,
       name: product.name,
-      price: product.price,
+      price: finalPrice,
       imageUrl: product.imageUrl,
       quantity: 1,
     });
