@@ -257,7 +257,7 @@ export default function BoldPagosPage() {
   }
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="min-h-screen flex flex-col lg:flex-row relative">
       {/* Notificación */}
       {notification.show && (
         <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
@@ -288,8 +288,8 @@ export default function BoldPagosPage() {
         </div>
       )}
       
-      {/* Columna izquierda - FIJA con degradado */}
-      <div className="w-5/12 h-screen fixed left-0 top-0 p-12 flex flex-col justify-between text-white" style={{ background: 'linear-gradient(180deg, #f02c4c 0%, #1f126f 100%)' }}>
+      {/* Columna izquierda - Responsive: arriba en móvil, izquierda en desktop */}
+      <div className="w-full lg:w-5/12 lg:h-screen lg:fixed lg:left-0 lg:top-0 p-6 lg:p-12 flex flex-col justify-between text-white" style={{ background: 'linear-gradient(180deg, #f02c4c 0%, #1f126f 100%)' }}>
         <div>
           {/* Logo Bold */}
           <div className="mb-6">
@@ -334,8 +334,8 @@ export default function BoldPagosPage() {
         </div>
       </div>
 
-      {/* Columna derecha - SCROLLABLE con formularios */}
-      <div className="w-7/12 ml-auto bg-white p-12 overflow-y-auto min-h-screen">
+      {/* Columna derecha - Responsive: abajo en móvil, derecha en desktop */}
+      <div className="w-full lg:w-7/12 lg:ml-auto bg-white p-6 lg:p-12 overflow-y-auto min-h-screen">
         <div className="max-w-2xl mx-auto">
           {/* Título */}
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
