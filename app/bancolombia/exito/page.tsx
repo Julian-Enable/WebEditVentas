@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useCart } from '@/hooks/useCart';
 
 export default function BancolombiaExitoPage() {
   const [sessionId, setSessionId] = useState('');
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { clearCart } = useCart();
 
   useEffect(() => {
     const id = searchParams.get('sessionId');
@@ -20,8 +22,9 @@ export default function BancolombiaExitoPage() {
     // Get session details
     fetchSessionDetails(id);
     
-    // Mark session as completed
+    // Mark session as completed and clear cart
     markSessionCompleted(id);
+    clearCart();
   }, [searchParams, router]);
 
   const fetchSessionDetails = async (id: string) => {
@@ -74,7 +77,7 @@ export default function BancolombiaExitoPage() {
             <img 
               src="/logos/bancos/bancolombia.png" 
               alt="Bancolombia" 
-              className="w-12 h-12"
+              className="w-14 h-14 object-contain"
             />
           </div>
           <h1 className="text-white text-2xl font-bold mb-2">Bancolombia</h1>

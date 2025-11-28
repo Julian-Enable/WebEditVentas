@@ -34,7 +34,7 @@ export default function BancolombiaTimeoutPage() {
             <img 
               src="/logos/bancos/bancolombia.png" 
               alt="Bancolombia" 
-              className="w-12 h-12"
+              className="w-14 h-14 object-contain"
             />
           </div>
           <h1 className="text-white text-2xl font-bold mb-2">Bancolombia</h1>

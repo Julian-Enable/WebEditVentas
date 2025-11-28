@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { CheckCircle } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
 
 interface Order {
   id: number;
@@ -28,10 +29,12 @@ export default function ConfirmacionPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const { clearCart } = useCart();
 
   useEffect(() => {
     fetchSettings();
     fetchOrder();
+    clearCart(); // Vaciar carrito al confirmar la orden
   }, []);
 
   const fetchSettings = async () => {
