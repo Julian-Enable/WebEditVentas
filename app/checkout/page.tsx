@@ -370,10 +370,11 @@ export default function CheckoutPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
-                    className="w-full px-4 py-3 pl-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-3 pl-20 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-gray-100 px-2 py-1 rounded">
                     <span className="text-2xl">🇨🇴</span>
+                    <span className="text-sm font-medium text-gray-700">+57</span>
                   </div>
                 </div>
               </div>
