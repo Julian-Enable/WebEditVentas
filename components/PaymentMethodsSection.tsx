@@ -7,6 +7,7 @@ const paymentLogos: Record<string, string> = {
   mastercard: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
   amex: 'https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg',
   diners: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Diners_Club_Logo3.svg',
+  efectivo: 'https://upload.wikimedia.org/wikipedia/commons/8/8d/Cash_payment_icon.svg',
 };
 
 export default function PaymentMethodsSection({ paymentMethods }: PaymentMethodsSectionProps) {
@@ -28,9 +29,11 @@ export default function PaymentMethodsSection({ paymentMethods }: PaymentMethods
               />
             )
           ))}
-          <div className="bg-secondary text-white px-6 py-3 rounded-lg font-semibold">
-            Pago Contra Entrega
-          </div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Cash_payment_icon.svg"
+            alt="Pago Contra Entrega"
+            className="h-12 object-contain grayscale hover:grayscale-0 transition"
+          />
         </div>
       </div>
     </section>
