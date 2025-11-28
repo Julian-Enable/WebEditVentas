@@ -124,8 +124,8 @@ export default function PoliticaPrivacidadPage() {
                 Si tienes alguna pregunta sobre esta Política de Privacidad, puedes contactarnos en:
               </p>
               <div className="mt-3 text-gray-700">
-                <p><strong>Email:</strong> info@tienda.com</p>
-                <p><strong>Teléfono:</strong> +57 300 123 4567</p>
+                <p><strong>Email:</strong> pedidos@casaplay.shop</p>
+                <p><strong>Teléfono:</strong> +57 321 224 2773</p>
               </div>
             </section>
 
