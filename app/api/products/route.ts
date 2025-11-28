@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
         name: body.name,
         description: body.description,
         price: parseFloat(body.price),
+        discount: parseFloat(body.discount || 0),
         imageUrl: body.imageUrl,
         category: body.category,
         isFeatured: body.isFeatured || false,

@@ -81,17 +81,22 @@ export default function AdminProductos() {
     }
   };
 
-  const handleEdit = (product: Product) => {
+  const handleEdit = async (product: Product) => {
     setEditingId(product.id);
+    
+    // Obtener el producto completo con descripción
+    const res = await fetch(`/api/products/${product.id}`);
+    const fullProduct = await res.json();
+    
     setFormData({
-      name: product.name,
-      description: '',
-      price: product.price.toString(),
-      discount: product.discount.toString(),
-      imageUrl: product.imageUrl,
-      category: product.category,
-      stock: product.stock.toString(),
-      isFeatured: product.isFeatured,
+      name: fullProduct.name,
+      description: fullProduct.description || '',
+      price: fullProduct.price.toString(),
+      discount: fullProduct.discount.toString(),
+      imageUrl: fullProduct.imageUrl,
+      category: fullProduct.category,
+      stock: fullProduct.stock.toString(),
+      isFeatured: fullProduct.isFeatured,
     });
     setShowForm(true);
   };
