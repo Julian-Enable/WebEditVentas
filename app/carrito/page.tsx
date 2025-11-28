@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/hooks/useCart';
-import { Trash2 } from 'lucide-react';
+import { Trash2, RefreshCw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface SiteSettings {
   siteName: string;
@@ -14,17 +15,56 @@ interface SiteSettings {
 
 export default function CarritoPage() {
   const router = useRouter();
-  const { items, removeItem, updateQuantity, getTotalPrice } = useCart();
+  const { items, removeItem, updateQuantity, getTotalPrice, updateItem } = useCart();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetchSettings();
+    syncCartPrices();
   }, []);
 
   const fetchSettings = async () => {
     const res = await fetch('/api/settings');
     const data = await res.json();
     setSettings(data);
+  };
+
+  const syncCartPrices = async () => {
+    setSyncing(true);
+    try {
+      // Obtener información actualizada de todos los productos en el carrito
+      const productIds = items.map(item => item.productId);
+      if (productIds.length === 0) return;
+
+      const res = await fetch('/api/products');
+      const products = await res.json();
+
+      let updated = false;
+      items.forEach(item => {
+        const product = products.find((p: any) => p.id === item.productId);
+        if (product && product.discount > 0) {
+          const finalPrice = product.price * (1 - product.discount / 100);
+          // Solo actualizar si no tiene la info de descuento
+          if (!item.originalPrice || !item.discount) {
+            updateItem(item.productId, {
+              price: finalPrice,
+              originalPrice: product.price,
+              discount: product.discount
+            });
+            updated = true;
+          }
+        }
+      });
+
+      if (updated) {
+        toast.success('Precios actualizados con descuentos');
+      }
+    } catch (error) {
+      console.error('Error syncing prices:', error);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const formatPrice = (price: number) => {

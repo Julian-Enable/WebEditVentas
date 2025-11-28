@@ -18,6 +18,7 @@ interface CartState {
   addItem: (item: CartItem) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
+  updateItem: (productId: number, updates: Partial<CartItem>) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
@@ -61,6 +62,14 @@ export const useCart = create<CartState>()(
         set((state) => ({
           items: state.items.map((item) =>
             item.productId === productId ? { ...item, quantity } : item
+          ),
+        }));
+      },
+
+      updateItem: (productId, updates) => {
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.productId === productId ? { ...item, ...updates } : item
           ),
         }));
       },
