@@ -66,15 +66,6 @@ export default function PoliticaEnviosPage() {
                     <strong>Disponibilidad:</strong> Principales ciudades
                   </p>
                 </div>
-
-                <div className="border-l-4 border-orange-500 pl-4">
-                  <h3 className="font-semibold text-lg text-gray-800 mb-2">Recogida en Tienda</h3>
-                  <p className="text-gray-600">
-                    <strong>Tiempo:</strong> Disponible al día siguiente<br/>
-                    <strong>Costo:</strong> Gratis<br/>
-                    <strong>Ubicación:</strong> Medellín, Colombia
-                  </p>
-                </div>
               </div>
             </section>
 
