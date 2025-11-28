@@ -10,6 +10,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
+  discount: number;
   category: string;
   stock: number;
   isFeatured: boolean;
@@ -25,6 +26,7 @@ export default function AdminProductos() {
     name: '',
     description: '',
     price: '',
+    discount: '',
     imageUrl: '',
     category: '',
     stock: '',
@@ -67,6 +69,7 @@ export default function AdminProductos() {
         name: '',
         description: '',
         price: '',
+        discount: '',
         imageUrl: '',
         category: '',
         stock: '',
@@ -84,6 +87,7 @@ export default function AdminProductos() {
       name: product.name,
       description: '',
       price: product.price.toString(),
+      discount: product.discount.toString(),
       imageUrl: product.imageUrl,
       category: product.category,
       stock: product.stock.toString(),
@@ -134,6 +138,7 @@ export default function AdminProductos() {
                 name: '',
                 description: '',
                 price: '',
+                discount: '',
                 imageUrl: '',
                 category: '',
                 stock: '',
@@ -168,6 +173,15 @@ export default function AdminProductos() {
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   required
+                  className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <input
+                  type="number"
+                  placeholder="Descuento (%) - Ej: 10 para 10%"
+                  value={formData.discount}
+                  onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+                  min="0"
+                  max="100"
                   className="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <input
@@ -242,6 +256,7 @@ export default function AdminProductos() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descuento</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Destacado</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
@@ -255,7 +270,27 @@ export default function AdminProductos() {
                   </td>
                   <td className="px-6 py-4 font-medium">{product.name}</td>
                   <td className="px-6 py-4">{product.category}</td>
-                  <td className="px-6 py-4">{formatPrice(product.price)}</td>
+                  <td className="px-6 py-4">
+                    <div>
+                      {product.discount > 0 && (
+                        <span className="text-sm text-gray-500 line-through block">
+                          {formatPrice(product.price)}
+                        </span>
+                      )}
+                      <span className={product.discount > 0 ? 'text-green-600 font-bold' : ''}>
+                        {formatPrice(product.price * (1 - product.discount / 100))}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {product.discount > 0 ? (
+                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-bold">
+                        -{product.discount}%
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">Sin descuento</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4">{product.stock}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-xs ${product.isFeatured ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>

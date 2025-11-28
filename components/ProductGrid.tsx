@@ -9,6 +9,7 @@ interface Product {
   name: string;
   description: string;
   price: number;
+  discount: number;
   imageUrl: string;
   category: string;
   stock: number;
@@ -45,17 +46,33 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-      <img
-        src={product.imageUrl}
-        alt={product.name}
-        className="w-full h-64 object-cover"
-      />
+      <div className="relative">
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="w-full h-64 object-cover"
+        />
+        {product.discount > 0 && (
+          <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+            -{product.discount}%
+          </div>
+        )}
+      </div>
       <div className="p-4">
         <span className="text-xs text-gray-500 uppercase">{product.category}</span>
         <h3 className="text-lg font-semibold mt-1 mb-2">{product.name}</h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-primary">{formatPrice(product.price)}</span>
+          <div>
+            {product.discount > 0 && (
+              <span className="text-sm text-gray-500 line-through block">
+                {formatPrice(product.price)}
+              </span>
+            )}
+            <span className="text-2xl font-bold text-primary">
+              {formatPrice(product.price * (1 - product.discount / 100))}
+            </span>
+          </div>
           <button
             onClick={handleAddToCart}
             disabled={isAdding || product.stock === 0}

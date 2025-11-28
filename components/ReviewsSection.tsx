@@ -5,6 +5,7 @@ interface Review {
   customerName: string;
   rating: number;
   comment: string;
+  profileImage: string;
 }
 
 interface ReviewsSectionProps {
@@ -32,9 +33,18 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {reviews.map((review) => (
             <div key={review.id} className="bg-gray-50 p-6 rounded-lg shadow">
-              <StarRating rating={review.rating} />
-              <p className="text-gray-700 mt-4 mb-4">&ldquo;{review.comment}&rdquo;</p>
-              <p className="font-semibold text-gray-800">{review.customerName}</p>
+              <div className="flex items-center gap-3 mb-4">
+                <img 
+                  src={review.profileImage} 
+                  alt={review.customerName}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-semibold text-gray-800">{review.customerName}</p>
+                  <StarRating rating={review.rating} />
+                </div>
+              </div>
+              <p className="text-gray-700">&ldquo;{review.comment}&rdquo;</p>
             </div>
           ))}
         </div>

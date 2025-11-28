@@ -5,6 +5,7 @@ import ProductGrid from '@/components/ProductGrid';
 import AboutSection from '@/components/AboutSection';
 import PaymentMethodsSection from '@/components/PaymentMethodsSection';
 import ReviewsSection from '@/components/ReviewsSection';
+import ReviewForm from '@/components/ReviewForm';
 import Footer from '@/components/Footer';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,7 @@ export default async function Home() {
       <AboutSection aboutUsText={settings.aboutUsText} />
       <PaymentMethodsSection paymentMethods={settings.paymentMethodsLogos} />
       <ReviewsSection reviews={reviews} />
+      <ReviewForm />
       <Footer siteName={settings.siteName} />
     </main>
   );
