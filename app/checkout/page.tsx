@@ -512,9 +512,19 @@ export default function CheckoutPage() {
                   <div className="flex-1">
                     <p className="font-medium text-sm mb-1">{item.name}</p>
                     <p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
+                    {item.discount && item.discount > 0 && (
+                      <p className="text-xs text-green-600 font-semibold mt-1">-{item.discount}% descuento</p>
+                    )}
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                    {item.originalPrice && item.originalPrice > item.price ? (
+                      <>
+                        <p className="text-sm text-gray-400 line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
+                        <p className="font-semibold text-green-600">{formatPrice(item.price * item.quantity)}</p>
+                      </>
+                    ) : (
+                      <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                    )}
                   </div>
                 </div>
               ))}

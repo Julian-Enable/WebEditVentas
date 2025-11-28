@@ -74,7 +74,15 @@ export default function CarritoPage() {
                 />
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">{item.name}</h3>
-                  <p className="text-primary font-bold">{formatPrice(item.price)}</p>
+                  {item.originalPrice && item.originalPrice > item.price ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-400 line-through text-sm">{formatPrice(item.originalPrice)}</p>
+                      <p className="text-green-600 font-bold">{formatPrice(item.price)}</p>
+                      <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded">-{item.discount}%</span>
+                    </div>
+                  ) : (
+                    <p className="text-primary font-bold">{formatPrice(item.price)}</p>
+                  )}
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => updateQuantity(item.productId, item.quantity - 1)}
@@ -98,7 +106,14 @@ export default function CarritoPage() {
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
-                  <p className="font-bold text-lg">{formatPrice(item.price * item.quantity)}</p>
+                  {item.originalPrice && item.originalPrice > item.price ? (
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400 line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
+                      <p className="font-bold text-lg text-green-600">{formatPrice(item.price * item.quantity)}</p>
+                    </div>
+                  ) : (
+                    <p className="font-bold text-lg">{formatPrice(item.price * item.quantity)}</p>
+                  )}
                 </div>
               </div>
             ))}

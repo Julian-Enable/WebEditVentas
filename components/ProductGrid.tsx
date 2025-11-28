@@ -30,6 +30,8 @@ export function ProductCard({ product }: ProductCardProps) {
       productId: product.id,
       name: product.name,
       price: finalPrice,
+      originalPrice: product.discount > 0 ? product.price : undefined,
+      discount: product.discount > 0 ? product.discount : undefined,
       imageUrl: product.imageUrl,
       quantity: 1,
     });
