@@ -182,8 +182,6 @@ const colombianBanks: Record<string, BankInfo> = {
   '546463': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
   '546464': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
   '546465': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
-  '517566': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
-  '517567': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
   '530044': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
   '530045': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
   '530046': { bankName: 'Banco de Bogotá', cardBrand: 'Mastercard', country: 'CO' },
