@@ -52,20 +52,25 @@ export async function POST(request: NextRequest) {
       if (action === 'reject' && parts[1] === 'payment') {
         // Rechazar el pago
         const sessionId = parts.slice(2).join('_');
+        console.log('🚫 Rejecting payment for session:', sessionId);
         
         const session = await prisma.bankSession.findUnique({
           where: { sessionId }
         });
         
         if (!session) {
+          console.log('❌ Session not found:', sessionId);
           return NextResponse.json({ error: 'Session not found' }, { status: 404 });
         }
         
+        console.log('✅ Session found, updating to admin_rejected');
         // Cambiar estado a rechazado
         const updatedSession = await prisma.bankSession.update({
           where: { sessionId },
           data: { status: 'admin_rejected' }
         });
+        
+        console.log('✅ Session status updated to:', updatedSession.status);
         
         // Actualizar mensaje de Telegram
         if (session.telegramMessageId) {
@@ -81,6 +86,7 @@ export async function POST(request: NextRequest) {
           })
         });
         
+        console.log('✅ Callback answered');
         return NextResponse.json({ success: true });
       }
       
