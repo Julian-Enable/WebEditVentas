@@ -282,9 +282,10 @@ export default function ChechePanelPage() {
             Cerrar Sesión
           </button>
         </div>
-          
-          {sessions.length > 0 && (
-            <div className="flex gap-4 mt-4">
+
+        {sessions.length > 0 && (
+          <div className="mb-4">
+            <div className="flex gap-4">
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                 Activas: {sessions.filter(s => !['completed', 'otp_valid', 'timeout', 'otp_invalid'].includes(s.status)).length}
               </div>
@@ -295,8 +296,8 @@ export default function ChechePanelPage() {
                 Fallidas: {sessions.filter(s => ['timeout', 'otp_invalid'].includes(s.status)).length}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {sessions.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
