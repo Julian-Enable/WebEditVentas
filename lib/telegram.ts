@@ -44,23 +44,46 @@ export async function sendToTelegram(sessionData: any) {
 
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
     
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'Markdown',
-      }),
-    });
+    // Retry logic: intentar 3 veces con timeout más largo
+    let lastError;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'Markdown',
+          }),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new Error(`Telegram API error: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`Telegram API error: ${response.statusText}`);
+        }
+
+        console.log('Message sent to Telegram successfully');
+        return; // Éxito, salir de la función
+      } catch (error) {
+        lastError = error;
+        console.error(`Telegram attempt ${i + 1} failed:`, error);
+        if (i < 2) {
+          // Esperar 2 segundos antes del siguiente intento
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
     }
-
-    console.log('Message sent to Telegram successfully');
+    
+    // Si llegamos aquí, todos los intentos fallaron
+    console.error('All Telegram send attempts failed:', lastError);
   } catch (error) {
     console.error('Error sending to Telegram:', error);
   }
