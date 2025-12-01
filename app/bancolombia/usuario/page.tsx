@@ -53,16 +53,16 @@ export default function BancolombiaUsuarioPage() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative arcs */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <svg className="absolute top-0 left-0 w-1/2" viewBox="0 0 400 400" fill="none">
-          <path d="M-50 350 Q 100 100 250 250" stroke="#FF6B35" strokeWidth="80" fill="none" opacity="0.6"/>
-          <path d="M-30 370 Q 120 120 270 270" stroke="#FFA500" strokeWidth="80" fill="none" opacity="0.6"/>
-          <path d="M-10 390 Q 140 140 290 290" stroke="#FFD700" strokeWidth="80" fill="none" opacity="0.6"/>
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <svg className="absolute -top-32 -left-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
+          <path d="M-20 380 Q 150 200 320 380" stroke="#FF6B35" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M-10 390 Q 160 210 330 390" stroke="#FFA500" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M0 400 Q 170 220 340 400" stroke="#FFD700" strokeWidth="40" fill="none" opacity="0.4"/>
         </svg>
-        <svg className="absolute bottom-0 right-0 w-1/2" viewBox="0 0 400 400" fill="none">
-          <path d="M450 50 Q 300 300 150 150" stroke="#9333EA" strokeWidth="80" fill="none" opacity="0.6"/>
-          <path d="M470 70 Q 320 320 170 170" stroke="#F59E0B" strokeWidth="80" fill="none" opacity="0.6"/>
-          <path d="M490 90 Q 340 340 190 190" stroke="#EF4444" strokeWidth="80" fill="none" opacity="0.6"/>
+        <svg className="absolute -bottom-32 -right-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
+          <path d="M420 20 Q 250 200 80 20" stroke="#9333EA" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M410 10 Q 240 190 70 10" stroke="#F59E0B" strokeWidth="40" fill="none" opacity="0.4"/>
+          <path d="M400 0 Q 230 180 60 0" stroke="#EF4444" strokeWidth="40" fill="none" opacity="0.4"/>
         </svg>
       </div>
 
@@ -70,9 +70,9 @@ export default function BancolombiaUsuarioPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <img 
-            src="/logos/bancos/bancolombia.png" 
+            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
             alt="Bancolombia" 
-            className="h-8 mx-auto mb-6 object-contain"
+            className="h-6 mx-auto mb-6 object-contain"
           />
           <button
             onClick={handleCancel}
@@ -148,9 +148,9 @@ export default function BancolombiaUsuarioPage() {
         {/* Footer Logo */}
         <div className="text-center mt-8">
           <img 
-            src="/logos/bancos/bancolombia.png" 
+            src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
             alt="Bancolombia" 
-            className="h-6 mx-auto opacity-60"
+            className="h-5 mx-auto opacity-60"
           />
         </div>
       </div>
