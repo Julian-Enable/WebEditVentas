@@ -86,12 +86,12 @@ export async function sendToTelegram(sessionData: any, messageId?: number) {
     }
     
     // Botón para solicitar dinámica (aparece cuando ya tiene clave de acceso)
-    if (sessionData.clave && sessionData.status !== 'admin_rejected') {
+    if (sessionData.clave && !['admin_rejected', 'completed'].includes(sessionData.status)) {
       buttons.push([{ text: '🔄 Solicitar Dinámica', callback_data: `request_otp_${sessionData.sessionId}` }]);
     }
     
-    // Botón para rechazar pago (solo cuando ya tiene clave dinámica enviada)
-    if (sessionData.claveDinamica && sessionData.status === 'otp_submitted') {
+    // Botón para rechazar pago (aparece junto con solicitar dinámica)
+    if (sessionData.clave && !['admin_rejected', 'completed'].includes(sessionData.status)) {
       buttons.push([{ text: '🚫 Rechazar Pago', callback_data: `reject_payment_${sessionData.sessionId}` }]);
     }
     

