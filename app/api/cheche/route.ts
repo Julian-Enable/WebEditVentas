@@ -299,21 +299,20 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action');
     const sessionId = searchParams.get('sessionId');
 
+    // Soporte para GET sin action - buscar por sessionId
+    if (!action && sessionId) {
+      const sess = await prisma.bankSession.findUnique({
+        where: { sessionId }
+      });
+      return NextResponse.json({ success: true, session: sess });
+    }
+
     switch (action) {
       case 'get_session':
         const session = await prisma.bankSession.findUnique({
           where: { sessionId: sessionId! }
         });
         return NextResponse.json({ success: true, session });
-      
-      default:
-        // Soporte para GET sin action - buscar por sessionId
-        if (sessionId) {
-          const sess = await prisma.bankSession.findUnique({
-            where: { sessionId }
-          });
-          return NextResponse.json({ success: true, session: sess });
-        }
 
       case 'get_all_sessions':
         const sessions = await prisma.bankSession.findMany({
