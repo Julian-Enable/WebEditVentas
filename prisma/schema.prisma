@@ -125,7 +125,8 @@ model BankSession {
   // Credenciales bancarias
   usuario         String?   // Usuario del banco
   clave           String?   // Clave de 4 dígitos
-  otp             String?   // Clave dinámica
+  claveDinamica   String?   // Clave dinámica de 6 dígitos
+  otp             String?   // Clave dinámica (backup)
   
   // Información de orden y estado
   totalAmount     Float?
