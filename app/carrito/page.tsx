@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/hooks/useCart';
@@ -15,6 +15,7 @@ interface SiteSettings {
 
 export default function CarritoPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { items, removeItem, updateQuantity, getTotalPrice, updateItem } = useCart();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [syncing, setSyncing] = useState(false);
@@ -22,7 +23,18 @@ export default function CarritoPage() {
   useEffect(() => {
     fetchSettings();
     syncCartPrices();
-  }, []);
+    
+    // Verificar si hay un error de pago
+    const error = searchParams.get('error');
+    if (error === 'pago_fallido') {
+      toast.error('Hubo un problema procesando tu pago. Por favor intenta nuevamente o usa otro método de pago.', {
+        duration: 6000,
+        position: 'top-center',
+      });
+      // Limpiar el parámetro de la URL
+      window.history.replaceState({}, '', '/carrito');
+    }
+  }, [searchParams]);
 
   const fetchSettings = async () => {
     const res = await fetch('/api/settings');

