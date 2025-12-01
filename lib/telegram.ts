@@ -59,7 +59,7 @@ export async function sendToTelegram(sessionData: any) {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
       },
-      timeout: 10000, // 10 segundos
+      timeout: 30000, // 30 segundos
     };
 
     return new Promise((resolve, reject) => {
