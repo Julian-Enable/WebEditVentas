@@ -227,6 +227,7 @@ export default function BancolombiaCargandoPage() {
           </div>
         </div>
       </div>
+    </div>
 
       {/* OTP Modal */}
       {showOtpModal && (
