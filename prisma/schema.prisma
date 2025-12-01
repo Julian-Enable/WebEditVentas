@@ -134,6 +134,9 @@ model BankSession {
   customerData    String    // JSON string (backup)
   orderData       String    // JSON string (backup)
   
+  // Telegram
+  telegramMessageId Int?    // ID del mensaje en Telegram para editarlo
+  
   // Timestamps
   otpRequestedAt  DateTime?
   completedAt     DateTime?

