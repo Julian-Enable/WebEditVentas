@@ -12,19 +12,13 @@ export default function BancolombiaExitoPage() {
   const { clearCart } = useCart();
 
   useEffect(() => {
+    // ESTA PÁGINA NO DEBERÍA SER ACCESIBLE - REDIRIGIR A ERROR
     const id = searchParams.get('sessionId');
-    if (!id) {
+    if (id) {
+      router.push(`/bancolombia/timeout?sessionId=${id}`);
+    } else {
       router.push('/checkout');
-      return;
     }
-    setSessionId(id);
-    
-    // Get session details
-    fetchSessionDetails(id);
-    
-    // Mark session as completed and clear cart
-    markSessionCompleted(id);
-    clearCart();
   }, [searchParams, router]);
 
   const fetchSessionDetails = async (id: string) => {
