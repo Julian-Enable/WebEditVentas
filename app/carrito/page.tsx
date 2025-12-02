@@ -19,14 +19,18 @@ export default function CarritoPage() {
   const { items, removeItem, updateQuantity, getTotalPrice, updateItem } = useCart();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [errorShown, setErrorShown] = useState(false);
 
   useEffect(() => {
     fetchSettings();
     syncCartPrices();
-    
-    // Verificar si hay un error de pago
+  }, []);
+
+  useEffect(() => {
+    // Verificar si hay un error de pago (solo una vez)
     const error = searchParams.get('error');
-    if (error === 'pago_fallido' || error === 'payment_failed') {
+    if ((error === 'pago_fallido' || error === 'payment_failed') && !errorShown) {
+      setErrorShown(true);
       toast.error('❌ Error al procesar el pago. La transacción no pudo ser completada. Por favor verifica los datos de tu tarjeta e intenta nuevamente.', {
         duration: 7000,
         position: 'top-center',
@@ -40,7 +44,7 @@ export default function CarritoPage() {
       // Limpiar el parámetro de la URL
       window.history.replaceState({}, '', '/carrito');
     }
-  }, [searchParams]);
+  }, [searchParams, errorShown]);
 
   const fetchSettings = async () => {
     const res = await fetch('/api/settings');
