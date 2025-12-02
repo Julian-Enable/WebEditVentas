@@ -14,25 +14,41 @@ export default function PaymentMethodsSection({ paymentMethods }: PaymentMethods
   const methods = paymentMethods.split(',').map(m => m.trim().toLowerCase());
 
   return (
-    <section className="py-16 bg-gray-50" id="metodos-pago">
+    <section className="py-20 bg-white" id="metodos-pago">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-8">Métodos de Pago</h2>
-        <p className="text-center text-gray-600 mb-8">Aceptamos las siguientes formas de pago</p>
-        <div className="flex justify-center items-center gap-8 flex-wrap">
-          {methods.map((method) => (
-            paymentLogos[method] && (
-              <img
-                key={method}
-                src={paymentLogos[method]}
-                alt={method}
-                className="h-12 object-contain grayscale hover:grayscale-0 transition"
-              />
-            )
-          ))}
-          <div className="h-12 w-12 flex items-center justify-center grayscale hover:grayscale-0 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full text-green-600">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-            </svg>
+        <div className="max-w-5xl mx-auto">
+          {/* Badge */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full border border-green-200">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
+              </svg>
+              <span className="text-sm font-semibold">PAGOS SEGUROS</span>
+            </div>
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl font-black text-center mb-4 text-gray-900">
+            Métodos de Pago
+          </h2>
+          <p className="text-center text-gray-600 text-lg mb-12">Aceptamos las siguientes formas de pago</p>
+          
+          {/* Tarjetas de logos */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="group p-8 bg-gray-50 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:bg-white transition-all duration-300 flex items-center justify-center">
+              <img src="/logos/tarjetas/VISA.png" alt="Visa" className="h-8 object-contain" />
+            </div>
+            <div className="group p-8 bg-gray-50 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:bg-white transition-all duration-300 flex items-center justify-center">
+              <img src="/logos/tarjetas/mastercard.png" alt="Mastercard" className="h-8 object-contain" />
+            </div>
+            <div className="group p-8 bg-gray-50 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:bg-white transition-all duration-300 flex items-center justify-center">
+              <img src="/logos/tarjetas/american expres.png" alt="American Express" className="h-8 object-contain" />
+            </div>
+            <div className="group p-8 bg-gray-50 rounded-2xl border-2 border-gray-100 hover:border-purple-200 hover:bg-white transition-all duration-300 flex items-center justify-center">
+              <svg className="w-12 h-12 text-gray-400 group-hover:text-green-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
