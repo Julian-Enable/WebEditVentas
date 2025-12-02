@@ -25,27 +25,36 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`/api/products/${params.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setProduct(data);
+        // Fetch product
+        const productResponse = await fetch(`/api/products/${params.id}`);
+        if (productResponse.ok) {
+          const productData = await productResponse.json();
+          setProduct(productData);
+        }
+
+        // Fetch settings
+        const settingsResponse = await fetch('/api/settings');
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json();
+          setSettings(settingsData);
         }
       } catch (error) {
-        console.error('Error loading product:', error);
+        console.error('Error loading data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProduct();
+    fetchData();
   }, [params.id]);
 
   const handleAddToCart = () => {
@@ -74,14 +83,15 @@ export default function ProductDetailPage() {
   const productImages = product ? [product.imageUrl, product.imageUrl, product.imageUrl] : [];
   const finalPrice = product ? product.price * (1 - product.discount / 100) : 0;
 
-  if (loading) {
+  if (loading || !settings) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600"></div>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando...</p>
+          </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -89,7 +99,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
+        <Navbar siteName={settings.siteName} logoUrl={settings.logoUrl} />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Producto no encontrado</h1>
           <button
@@ -99,14 +109,14 @@ export default function ProductDetailPage() {
             Volver a productos
           </button>
         </div>
-        <Footer />
+        <Footer siteName={settings.siteName} />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <Navbar siteName={settings.siteName} logoUrl={settings.logoUrl} />
 
       {/* Mensaje de producto agregado */}
       {showAddedMessage && (
@@ -296,7 +306,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <Footer />
+      <Footer siteName={settings.siteName} />
     </div>
   );
 }
