@@ -70,6 +70,10 @@ export default function ProductDetailPage() {
     router.push('/carrito');
   };
 
+  // Generar imágenes múltiples y calcular precio (antes de los returns condicionales)
+  const productImages = product ? [product.imageUrl, product.imageUrl, product.imageUrl] : [];
+  const finalPrice = product ? product.price * (1 - product.discount / 100) : 0;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -99,12 +103,6 @@ export default function ProductDetailPage() {
       </div>
     );
   }
-
-  // Generar imágenes múltiples (simulado - en producción vendrían de la base de datos)
-  const productImages = [product.imageUrl, product.imageUrl, product.imageUrl];
-  
-  // Calcular precio final con descuento
-  const finalPrice = product.price * (1 - product.discount / 100);
 
   return (
     <div className="min-h-screen bg-gray-50">
