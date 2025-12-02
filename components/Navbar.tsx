@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 
@@ -12,6 +13,35 @@ interface NavbarProps {
 export default function Navbar({ siteName, logoUrl }: NavbarProps) {
   const { items } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const router = useRouter();
+
+  const scrollToSection = (sectionId: string) => {
+    // Si no estamos en la página principal, navegar primero
+    if (window.location.pathname !== '/') {
+      router.push('/#' + sectionId);
+      // Esperar un poco para que la página cargue
+      setTimeout(() => {
+        performScroll(sectionId);
+      }, 100);
+    } else {
+      performScroll(sectionId);
+    }
+  };
+
+  const performScroll = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const navbarHeight = 80; // Altura aproximada del navbar
+      const offset = 100; // Espacio adicional arriba del título
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - navbarHeight - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-100">
@@ -29,15 +59,24 @@ export default function Navbar({ siteName, logoUrl }: NavbarProps) {
             <Link href="/productos" className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium">
               Productos
             </Link>
-            <Link href="/#sobre-nosotros" className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium">
+            <button 
+              onClick={() => scrollToSection('sobre-nosotros')}
+              className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium"
+            >
               Nosotros
-            </Link>
-            <Link href="/#metodos-pago" className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium">
+            </button>
+            <button 
+              onClick={() => scrollToSection('metodos-pago')}
+              className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium"
+            >
               Pago
-            </Link>
-            <Link href="/#resenas" className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium">
+            </button>
+            <button 
+              onClick={() => scrollToSection('resenas')}
+              className="text-gray-700 hover:text-primary transition-all px-4 py-2 rounded-lg hover:bg-primary/5 font-medium"
+            >
               Reseñas
-            </Link>
+            </button>
           </div>
 
           <Link href="/carrito" className="relative group">
