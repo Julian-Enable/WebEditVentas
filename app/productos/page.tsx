@@ -18,6 +18,7 @@ interface Product {
 interface SiteSettings {
   siteName: string;
   logoUrl: string;
+  heroImage: string;
 }
 
 export default function ProductosPage() {
@@ -57,8 +58,14 @@ export default function ProductosPage() {
     <main>
       <Navbar siteName={settings.siteName} logoUrl={settings.logoUrl} />
       
-      {/* Header Hero Mejorado */}
-      <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 text-white py-20 overflow-hidden">
+      {/* Header Hero Mejorado con Imagen de Fondo */}
+      <div 
+        className="relative text-white py-20 overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: `url(${settings.heroImage})` }}
+      >
+        {/* Overlay oscuro para mejor legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-purple-800/75 to-blue-900/80"></div>
+        
         {/* Elementos decorativos */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl"></div>
