@@ -19,8 +19,11 @@ export default async function Home() {
   const reviews = await prisma.review.findMany({
     where: { isApproved: true },
     orderBy: { createdAt: 'desc' },
-    take: 4,
-  });
+    take: 12,
+  }).then(reviews => reviews.map(review => ({
+    ...review,
+    profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.customerName)}&background=random&color=fff&size=128`
+  })));
 
   if (!settings) {
     return <div>Configuración no encontrada. Por favor, ejecuta el seed.</div>;
