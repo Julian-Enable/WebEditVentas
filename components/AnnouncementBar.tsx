@@ -1,8 +1,10 @@
+'use client';
+
 export default function AnnouncementBar() {
   return (
     <div className="bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 text-white py-3 px-4 text-center relative overflow-hidden">
       {/* Animación de brillo */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+      <div className="absolute inset-0 shimmer-animation"></div>
       
       <div className="relative z-10 flex items-center justify-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -25,7 +27,8 @@ export default function AnnouncementBar() {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
         }
-        .animate-shimmer {
+        .shimmer-animation {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
           animation: shimmer 3s infinite;
         }
       `}</style>
