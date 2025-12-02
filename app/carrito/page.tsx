@@ -26,10 +26,16 @@ export default function CarritoPage() {
     
     // Verificar si hay un error de pago
     const error = searchParams.get('error');
-    if (error === 'pago_fallido') {
-      toast.error('Hubo un problema procesando tu pago. Por favor intenta nuevamente o usa otro método de pago.', {
-        duration: 6000,
+    if (error === 'pago_fallido' || error === 'payment_failed') {
+      toast.error('❌ Error al procesar el pago. La transacción no pudo ser completada. Por favor verifica los datos de tu tarjeta e intenta nuevamente.', {
+        duration: 7000,
         position: 'top-center',
+        style: {
+          background: '#FEE2E2',
+          color: '#991B1B',
+          border: '2px solid #F87171',
+          fontWeight: '600',
+        },
       });
       // Limpiar el parámetro de la URL
       window.history.replaceState({}, '', '/carrito');

