@@ -188,8 +188,8 @@ export default function PoliticaEnviosPage() {
               </p>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <p className="text-gray-700"><strong>Email:</strong> pedidos@casaplay.shop</p>
-                <p className="text-gray-700"><strong>Teléfono:</strong> +57 321 224 2773</p>
-                <p className="text-gray-700"><strong>WhatsApp:</strong> +57 321 224 2773</p>
+                <p className="text-gray-700"><strong>Teléfono:</strong> +57 318 205 5412</p>
+                <p className="text-gray-700"><strong>WhatsApp:</strong> +57 318 205 5412</p>
                 <p className="text-gray-700"><strong>Horario de atención:</strong> Lunes a Viernes, 8:00 AM - 6:00 PM</p>
               </div>
             </section>

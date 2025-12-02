@@ -36,8 +36,8 @@ export default function Footer({ siteName }: FooterProps) {
             <h4 className="font-semibold mb-4">Contacto</h4>
             <ul className="space-y-2 text-gray-400">
               <li>Email: pedidos@casaplay.shop</li>
-              <li>Teléfono: +57 321 224 2773</li>
-              <li>WhatsApp: +57 321 224 2773</li>
+              <li>Teléfono: +57 318 205 5412</li>
+              <li>WhatsApp: +57 318 205 5412</li>
             </ul>
           </div>
         </div>

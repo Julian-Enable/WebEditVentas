@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import './globals.css';
 import { prisma } from '@/lib/prisma';
 import PageLoader from '@/components/PageLoader';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
       </head>
       <body className={inter.className}>
         <PageLoader />
+        <WhatsAppButton />
         {children}
         <Toaster position="top-right" />
       </body>
