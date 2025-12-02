@@ -100,7 +100,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </button>
           </div>
         </div>
-        </div>
       </div>
     </div>
   );
