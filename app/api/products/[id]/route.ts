@@ -18,7 +18,19 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(product);
+    // Agregar características genéricas basadas en la categoría
+    const productWithFeatures = {
+      ...product,
+      features: [
+        'Producto 100% original',
+        'Garantía de satisfacción',
+        'Envío gratis a toda Colombia',
+        'Pago contra entrega disponible',
+        'Soporte técnico incluido'
+      ]
+    };
+
+    return NextResponse.json(productWithFeatures);
   } catch (error) {
     console.error('Error al obtener producto:', error);
     return NextResponse.json(

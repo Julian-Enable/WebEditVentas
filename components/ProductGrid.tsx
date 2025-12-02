@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useCart } from '@/hooks/useCart';
 import toast from 'react-hot-toast';
 
@@ -50,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group bg-white rounded-3xl overflow-hidden border-2 border-gray-100 hover:border-purple-200 transition-all duration-300 hover:shadow-xl h-full flex flex-col">
       {/* Imagen - altura fija */}
-      <div className="relative overflow-hidden bg-gray-50 h-56 flex-shrink-0">
+      <Link href={`/productos/${product.id}`} className="relative overflow-hidden bg-gray-50 h-56 flex-shrink-0 cursor-pointer">
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -73,10 +74,10 @@ export function ProductCard({ product }: ProductCardProps) {
           </svg>
           Pago contra entrega
         </div>
-      </div>
+      </Link>
       
       {/* Contenido - flex-1 para tomar espacio restante */}
-      <div className="p-5 flex flex-col flex-1">
+      <Link href={`/productos/${product.id}`} className="p-5 flex flex-col flex-1 cursor-pointer">
         {/* Categoría */}
         <span className="inline-block text-xs font-bold text-purple-600 uppercase tracking-wider bg-purple-50 px-3 py-1 rounded-lg mb-3 w-fit">
           {product.category}
@@ -94,9 +95,11 @@ export function ProductCard({ product }: ProductCardProps) {
         
         {/* Spacer para empujar el footer al fondo */}
         <div className="flex-1"></div>
+      </Link>
         
-        {/* Footer - precio y botón */}
-        <div className="pt-4 border-t border-gray-100 mt-auto">
+      {/* Footer - precio y botón */}
+      <div className="p-5 pt-0">
+        <div className="pt-4 border-t border-gray-100">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-shrink-0">
               {product.discount > 0 && (
@@ -109,7 +112,10 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
             <button
-              onClick={handleAddToCart}
+              onClick={(e) => {
+                e.preventDefault();
+                handleAddToCart();
+              }}
               disabled={isAdding || product.stock === 0}
               className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-bold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 text-sm whitespace-nowrap flex-shrink-0"
             >
