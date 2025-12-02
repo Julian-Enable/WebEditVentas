@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function PageLoader() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Iniciar en true para evitar flash
   const pathname = usePathname();
 
   useEffect(() => {
@@ -22,7 +22,10 @@ export default function PageLoader() {
   if (!loading) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white flex items-center justify-center">
+    <div 
+      className="fixed inset-0 z-[9999] bg-white flex items-center justify-center transition-opacity duration-300"
+      style={{ opacity: loading ? 1 : 0 }}
+    >
       <div className="text-center">
         {/* Spinner animado */}
         <div className="relative w-16 h-16 mx-auto mb-4">
