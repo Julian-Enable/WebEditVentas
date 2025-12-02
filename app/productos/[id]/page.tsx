@@ -97,14 +97,14 @@ export default function ProductDetailPage() {
         </div>
         <Footer />
       </div>
+    );
+  }
+
   // Generar imágenes múltiples (simulado - en producción vendrían de la base de datos)
   const productImages = [product.imageUrl, product.imageUrl, product.imageUrl];
   
   // Calcular precio final con descuento
   const finalPrice = product.price * (1 - product.discount / 100);
-
-  // Generar imágenes múltiples (simulado - en producción vendrían de la base de datos)
-  const productImages = [product.image, product.image, product.image];
 
   return (
     <div className="min-h-screen bg-gray-50">
