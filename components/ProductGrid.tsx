@@ -48,12 +48,12 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden border-2 border-gray-100 hover:border-purple-200 transition-all duration-300 hover:shadow-xl">
-      <div className="relative overflow-hidden bg-gray-50">
+    <div className="group bg-white rounded-3xl overflow-hidden border-2 border-gray-100 hover:border-purple-200 transition-all duration-300 hover:shadow-xl flex flex-col h-full">
+      <div className="relative overflow-hidden bg-gray-50 flex-shrink-0">
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {product.discount > 0 && (
           <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
@@ -66,37 +66,40 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
-      <div className="p-6">
-        <span className="inline-block text-xs font-bold text-purple-600 uppercase tracking-wider bg-purple-50 px-3 py-1 rounded-lg mb-3">{product.category}</span>
-        <h3 className="text-xl font-black mb-2 text-gray-900 group-hover:text-purple-600 transition-colors line-clamp-1">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-          <div>
-            {product.discount > 0 && (
-              <span className="text-sm text-gray-400 line-through block mb-1">
-                {formatPrice(product.price)}
+      <div className="p-6 flex flex-col h-full">
+        <span className="inline-block text-xs font-bold text-purple-600 uppercase tracking-wider bg-purple-50 px-3 py-1 rounded-lg mb-3 w-fit">{product.category}</span>
+        <h3 className="text-lg font-black mb-2 text-gray-900 group-hover:text-purple-600 transition-colors line-clamp-2 min-h-[3.5rem]">{product.name}</h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
+        <div className="mt-auto pt-4 border-t border-gray-100">
+          <div className="flex items-end justify-between">
+            <div>
+              {product.discount > 0 && (
+                <span className="text-xs text-gray-400 line-through block mb-1">
+                  {formatPrice(product.price)}
+                </span>
+              )}
+              <span className="text-xl font-black text-gray-900">
+                {formatPrice(product.price * (1 - product.discount / 100))}
               </span>
-            )}
-            <span className="text-2xl font-black text-gray-900">
-              {formatPrice(product.price * (1 - product.discount / 100))}
-            </span>
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding || product.stock === 0}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:scale-105 flex items-center gap-2 text-sm whitespace-nowrap"
+            >
+              {product.stock === 0 ? (
+                'Agotado'
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Agregar
+                </>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={isAdding || product.stock === 0}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:scale-105 flex items-center gap-2 text-sm"
-          >
-            {product.stock === 0 ? (
-              'Agotado'
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Agregar
-              </>
-            )}
-          </button>
+        </div>
         </div>
       </div>
     </div>
