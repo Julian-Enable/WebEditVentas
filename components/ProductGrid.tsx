@@ -66,6 +66,13 @@ export function ProductCard({ product }: ProductCardProps) {
             Solo {product.stock} disponibles
           </div>
         )}
+        {/* Badge de pago contra entrega */}
+        <div className="absolute bottom-4 left-4 bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+          Pago contra entrega
+        </div>
       </div>
       
       {/* Contenido - flex-1 para tomar espacio restante */}
