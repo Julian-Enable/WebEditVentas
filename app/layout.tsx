@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
 import { prisma } from '@/lib/prisma';
+import PageLoader from '@/components/PageLoader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,6 +42,7 @@ export default async function RootLayout({
         )}
       </head>
       <body className={inter.className}>
+        <PageLoader />
         {children}
         <Toaster position="top-right" />
       </body>

@@ -162,6 +162,9 @@ export default function CheckoutPage() {
       // Guardar datos en sessionStorage para la página de Bold
       sessionStorage.setItem('boldOrderData', JSON.stringify(orderData));
       
+      // Delay realista antes de navegar
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Redirigir a la página de Bold
       router.push('/boldpagos');
       return;
