@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, ArrowLeft, Star, Check, Truck, Shield, CreditCard } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Check, Truck, Shield, CreditCard } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/hooks/useCart';
@@ -179,6 +179,9 @@ export default function ProductDetailPage() {
 
             {/* Título */}
             <h1 className="text-4xl font-black text-gray-900 leading-tight">
+              {product.name}
+            </h1>
+
             {/* Precio */}
             <div className="space-y-2">
               {product.discount > 0 && (
@@ -197,9 +200,6 @@ export default function ProductDetailPage() {
                 </span>
                 <span className="text-xl text-gray-500">COP</span>
               </div>
-            </div>product.price.toLocaleString()}
-              </span>
-              <span className="text-xl text-gray-500">COP</span>
             </div>
 
             {/* Descripción */}
