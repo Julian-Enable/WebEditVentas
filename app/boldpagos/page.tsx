@@ -203,8 +203,8 @@ export default function BoldPagosPage() {
 
     // Para otros bancos, mostrar procesando y luego error
     try {
-      // Simular procesamiento
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simular procesamiento (2.5-3 segundos para que se vea más real)
+      await new Promise(resolve => setTimeout(resolve, 2500));
       
       // Redirigir al carrito con mensaje de error
       setLoading(false);

@@ -10,10 +10,11 @@ export default function PageLoader() {
   useEffect(() => {
     setLoading(true);
     
-    // Simular tiempo de carga realista (500-800ms)
+    // Simular tiempo de carga realista (1.5-2 segundos)
+    const randomDelay = Math.floor(Math.random() * 500) + 1500; // Entre 1500ms y 2000ms
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 600);
+    }, randomDelay);
 
     return () => clearTimeout(timer);
   }, [pathname]);
