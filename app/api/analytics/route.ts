@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN_ANALYTICS || '7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos';
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID_ANALYTICS || '-1003336718670';
+// Bot y grupo SEPARADO solo para analytics
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN_ANALYTICS || 'TU_TOKEN_BOT_ANALYTICS_AQUI';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID_ANALYTICS || 'TU_CHAT_ID_ANALYTICS_AQUI';
 
 async function sendTelegramMessage(message: string) {
   try {
+    console.log('Sending to Telegram with token:', TELEGRAM_BOT_TOKEN?.substring(0, 20) + '...');
+    console.log('Chat ID:', TELEGRAM_CHAT_ID);
+    
     const response = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
@@ -15,8 +19,12 @@ async function sendTelegramMessage(message: string) {
           text: message,
           parse_mode: 'HTML',
         }),
+        signal: AbortSignal.timeout(10000) // 10 segundos timeout
       }
     );
+    
+    const result = await response.json();
+    console.log('Telegram response:', result);
     return response.ok;
   } catch (error) {
     console.error('Error sending Telegram message:', error);
@@ -26,9 +34,17 @@ async function sendTelegramMessage(message: string) {
 
 async function getLocationFromIP(ip: string) {
   try {
-    const response = await fetch(`http://ip-api.com/json/${ip}?lang=es`);
+    const response = await fetch(`http://ip-api.com/json/${ip}?lang=es`, {
+      signal: AbortSignal.timeout(5000) // 5 segundos timeout
+    });
     if (response.ok) {
-      return await response.json();
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error('Error parsing location JSON:', text);
+        return null;
+      }
     }
   } catch (error) {
     console.error('Error getting location:', error);
