@@ -19,7 +19,7 @@ async function sendTelegramMessage(message: string) {
           text: message,
           parse_mode: 'HTML',
         }),
-        signal: AbortSignal.timeout(10000) // 10 segundos timeout
+        signal: AbortSignal.timeout(30000) // 30 segundos timeout
       }
     );
     
