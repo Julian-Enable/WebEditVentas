@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendToTelegram } from '@/lib/telegram';
 
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -37,7 +39,7 @@ export async function POST(request: NextRequest) {
           await sendToTelegram(updatedOtpSession, updatedOtpSession.telegramMessageId);
         }
         
-        await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
           await sendToTelegram(updatedSession, session.telegramMessageId);
         }
         
-        await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -128,7 +130,7 @@ export async function POST(request: NextRequest) {
         }
         
         // Responder al callback para quitar el loading del botón
-        await fetch(`https://api.telegram.org/bot7955811683:AAGJuSUBDihBFZrRD282kM40kEyhr9Ajwos/answerCallbackQuery`, {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
