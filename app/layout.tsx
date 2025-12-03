@@ -4,6 +4,7 @@ import './globals.css';
 import { prisma } from '@/lib/prisma';
 import PageLoader from '@/components/PageLoader';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
         )}
       </head>
       <body className={inter.className}>
+        <AnalyticsTracker />
         <PageLoader />
         <WhatsAppButton />
         {children}
