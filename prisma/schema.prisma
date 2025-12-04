@@ -75,15 +75,79 @@ model OrderItem {
 
 model SiteSettings {
   id                   Int      @id @default(autoincrement())
+  
+  // Identidad de Marca
   siteName             String   @default("Mi Tienda Online")
+  logoUrl              String   @default("/logo.png")
+  faviconUrl           String   @default("/favicon.ico")
+  brandDescription     String   @default("Tu tienda online de confianza")
+  tagline              String   @default("Calidad garantizada")
+  
+  // Información de Contacto
+  contactEmail         String   @default("contacto@tienda.com")
+  contactPhone         String   @default("+57 300 000 0000")
+  whatsappNumber       String   @default("573000000000")
+  address              String   @default("Calle 123 #45-67")
+  city                 String   @default("Bogotá")
+  country              String   @default("Colombia")
+  
+  // Redes Sociales
+  facebookUrl          String   @default("")
+  instagramUrl         String   @default("")
+  twitterUrl           String   @default("")
+  tiktokUrl            String   @default("")
+  youtubeUrl           String   @default("")
+  
+  // Personalización Visual
   primaryColor         String   @default("#3B82F6")
   secondaryColor       String   @default("#10B981")
-  logoUrl              String   @default("/logo.png")
-  aboutUsText          String   @default("Somos una tienda comprometida con la calidad y el servicio al cliente.")
-  paymentMethodsLogos  String   @default("visa,mastercard,amex")
+  accentColor          String   @default("#F59E0B")
+  fontFamily           String   @default("Inter")
+  buttonStyle          String   @default("rounded")
+  
+  // Hero Section
   heroImage            String   @default("/hero.jpg")
   heroTitle            String   @default("Bienvenido a nuestra tienda")
   heroSubtitle         String   @default("Los mejores productos al mejor precio")
+  
+  // Sobre Nosotros
+  aboutUsText          String   @default("Somos una tienda comprometida con la calidad y el servicio al cliente.")
+  
+  // SEO y Analytics
+  metaTitle            String   @default("Mi Tienda Online")
+  metaDescription      String   @default("Encuentra los mejores productos al mejor precio")
+  metaKeywords         String   @default("tienda,productos,comprar,online")
+  googleAnalyticsId    String   @default("")
+  facebookPixelId      String   @default("")
+  googleTagManagerId   String   @default("")
+  
+  // Configuración de Pagos
+  enableBoldPayments   Boolean  @default(true)
+  enableBancolombia    Boolean  @default(true)
+  enableCreditCard     Boolean  @default(true)
+  merchantName         String   @default("Mi Tienda")
+  paymentMethodsLogos  String   @default("visa,mastercard,amex")
+  
+  // Configuración de Tienda
+  currency             String   @default("COP")
+  currencySymbol       String   @default("$")
+  language             String   @default("es")
+  timezone             String   @default("America/Bogota")
+  enableReviews        Boolean  @default(true)
+  enableWishlist       Boolean  @default(false)
+  maxProductsPerPage   Int      @default(12)
+  
+  // Envíos y Logística
+  shippingMessage      String   @default("Envíos a todo el país")
+  shippingInsuranceFee Float    @default(15000)
+  freeShippingMinAmount Float   @default(0)
+  estimatedDeliveryDays String  @default("3-5 días hábiles")
+  
+  // Legal y Políticas
+  termsAndConditionsUrl String  @default("/terminos-condiciones")
+  privacyPolicyUrl      String  @default("/politica-privacidad")
+  returnPolicyUrl       String  @default("/politica-envios")
+  
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }

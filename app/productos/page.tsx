@@ -47,11 +47,13 @@ export default function ProductosPage() {
 
     const res = await fetch(url);
     const data = await res.json();
-    setProducts(data);
+    setProducts(Array.isArray(data) ? data : []);
     setLoading(false);
   };
 
-  const categories = Array.from(new Set(products.map(p => p.category)));
+  const categories = Array.isArray(products) && products.length > 0 
+    ? Array.from(new Set(products.map(p => p.category))) 
+    : [];
 
   if (!settings) return <div>Cargando...</div>;
 

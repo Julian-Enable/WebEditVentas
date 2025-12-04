@@ -19,23 +19,85 @@ async function main() {
   });
   console.log('✅ Admin creado:', admin.email);
 
-  // Crear configuración del sitio
+  // Crear configuración del sitio con TODOS los nuevos campos
   const siteSettings = await prisma.siteSettings.upsert({
     where: { id: 1 },
     update: {},
     create: {
+      // Identidad de Marca
       siteName: 'TiendaPro',
+      logoUrl: 'https://via.placeholder.com/150x50/3B82F6/ffffff?text=TiendaPro',
+      faviconUrl: '/favicon.ico',
+      brandDescription: 'Tu tienda online de confianza',
+      tagline: 'Calidad garantizada',
+      
+      // Información de Contacto
+      contactEmail: 'contacto@tiendapro.com',
+      contactPhone: '+57 300 123 4567',
+      whatsappNumber: '573001234567',
+      address: 'Calle 123 #45-67',
+      city: 'Bogotá',
+      country: 'Colombia',
+      
+      // Redes Sociales (vacías por defecto)
+      facebookUrl: '',
+      instagramUrl: '',
+      twitterUrl: '',
+      tiktokUrl: '',
+      youtubeUrl: '',
+      
+      // Personalización Visual
       primaryColor: '#3B82F6',
       secondaryColor: '#10B981',
-      logoUrl: 'https://via.placeholder.com/150x50/3B82F6/ffffff?text=TiendaPro',
-      aboutUsText: 'Somos una tienda líder en productos de alta calidad. Nos comprometemos a ofrecer la mejor experiencia de compra con envíos rápidos y atención personalizada.',
-      paymentMethodsLogos: 'visa,mastercard,amex,diners',
+      accentColor: '#F59E0B',
+      fontFamily: 'Inter',
+      buttonStyle: 'rounded',
+      
+      // Hero Section
       heroImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920',
       heroTitle: 'Descubre la Mejor Selección',
       heroSubtitle: 'Productos de calidad premium al mejor precio',
+      
+      // Sobre Nosotros
+      aboutUsText: 'Somos una tienda líder en productos de alta calidad. Nos comprometemos a ofrecer la mejor experiencia de compra con envíos rápidos y atención personalizada.',
+      
+      // SEO y Analytics
+      metaTitle: 'TiendaPro - Los Mejores Productos Online',
+      metaDescription: 'Encuentra productos de alta calidad al mejor precio. Envíos rápidos a todo Colombia.',
+      metaKeywords: 'tienda,productos,electrónica,gaming,comprar online',
+      googleAnalyticsId: '',
+      facebookPixelId: '',
+      googleTagManagerId: '',
+      
+      // Configuración de Pagos
+      enableBoldPayments: true,
+      enableBancolombia: true,
+      enableCreditCard: true,
+      merchantName: 'TiendaPro',
+      paymentMethodsLogos: 'visa,mastercard,amex,diners',
+      
+      // Configuración de Tienda
+      currency: 'COP',
+      currencySymbol: '$',
+      language: 'es',
+      timezone: 'America/Bogota',
+      enableReviews: true,
+      enableWishlist: false,
+      maxProductsPerPage: 12,
+      
+      // Envíos y Logística
+      shippingMessage: 'Envíos a todo Colombia',
+      shippingInsuranceFee: 15000,
+      freeShippingMinAmount: 0,
+      estimatedDeliveryDays: '3-5 días hábiles',
+      
+      // Legal y Políticas
+      termsAndConditionsUrl: '/terminos-condiciones',
+      privacyPolicyUrl: '/politica-privacidad',
+      returnPolicyUrl: '/politica-envios',
     },
   });
-  console.log('✅ Configuración del sitio creada');
+  console.log('✅ Configuración del sitio creada con personalización completa');
 
   // Crear productos de ejemplo
   const products = [

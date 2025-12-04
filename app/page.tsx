@@ -45,7 +45,7 @@ export default async function Home() {
       <PaymentMethodsSection paymentMethods={settings.paymentMethodsLogos} />
       <ReviewsSection reviews={reviews} />
       <ReviewForm />
-      <Footer siteName={settings.siteName} />
+      <Footer siteName={settings.siteName} settings={settings} />
     </main>
   );
 }
